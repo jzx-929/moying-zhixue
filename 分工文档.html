@@ -1,0 +1,1505 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>墨影智学 — 团队分工文档</title>
+<style>
+/* ========== CSS Reset & Variables ========== */
+:root {
+  --bg:#faf7f2; --bg2:#f2ede3; --bg3:#ebe5d8; --ink:#1a1a1a; --muted:#6b6b6b;
+  --rule:#d6cfc0; --accent:#8b2500; --accent2:#4a6741; --accent3:#b8860b; --shu:#c0392b;
+  --mgmt:#8b2500; --tech:#4a6741; --design:#b8860b; --content:#c0392b; --support:#6b6b6b;
+  --font-sans:"Noto Sans CJK SC","Microsoft YaHei","PingFang SC",sans-serif;
+  --font-body:"Noto Serif CJK SC","Source Han Serif SC","SimSun","STSong",serif;
+  --font-en:"Lora",Georgia,serif;
+  --sidebar-w:240px;
+}
+*,*::before,*::after { margin:0; padding:0; box-sizing:border-box; }
+html { scroll-behavior:smooth; }
+body {
+  font-family:var(--font-body);
+  background:var(--bg);
+  color:var(--ink);
+  line-height:1.8;
+  font-size:15px;
+  -webkit-font-smoothing:antialiased;
+}
+a { color:inherit; text-decoration:none; }
+
+/* ========== Layout ========== */
+.layout { display:flex; min-height:100vh; }
+
+/* ========== Sidebar ========== */
+.sidebar {
+  position:fixed; top:0; left:0; width:var(--sidebar-w); height:100vh;
+  background:var(--ink); color:var(--bg2);
+  overflow-y:auto; z-index:100;
+  padding:28px 0 40px;
+  border-right:1px solid #333;
+}
+.sidebar::-webkit-scrollbar { width:5px; }
+.sidebar::-webkit-scrollbar-track { background:#111; }
+.sidebar::-webkit-scrollbar-thumb { background:#444; border-radius:3px; }
+
+.logo {
+  padding:0 24px 24px;
+  border-bottom:1px solid #333;
+  margin-bottom:16px;
+}
+.logo-mark {
+  font-family:var(--font-body);
+  font-size:28px; font-weight:700; letter-spacing:4px;
+  color:var(--bg); line-height:1.2;
+}
+.logo-mark .seal {
+  display:inline-block; width:30px; height:30px;
+  background:var(--shu); color:#fff;
+  font-size:16px; text-align:center; line-height:30px;
+  border-radius:3px; margin-right:6px; vertical-align:middle;
+  font-family:var(--font-body);
+}
+.logo-sub {
+  font-family:var(--font-en);
+  font-size:10px; letter-spacing:2px; color:var(--muted);
+  margin-top:8px; text-transform:uppercase;
+}
+
+.nav-group { margin-bottom:20px; }
+.nav-group-title {
+  font-family:var(--font-sans);
+  font-size:11px; letter-spacing:2px; text-transform:uppercase;
+  color:#888; padding:0 24px 8px; font-weight:600;
+}
+.nav-item {
+  display:block; padding:8px 24px;
+  font-size:14px; color:#bbb;
+  border-left:3px solid transparent;
+  transition:all .2s;
+  font-family:var(--font-body);
+}
+.nav-item:hover { color:var(--bg); background:rgba(255,255,255,.06); }
+.nav-item.active { color:var(--bg); border-left-color:var(--accent3); background:rgba(255,255,255,.04); }
+.nav-item .nav-num {
+  display:inline-block; width:22px; font-family:var(--font-en);
+  font-size:12px; color:#666;
+}
+
+/* ========== Main Content ========== */
+.main {
+  margin-left:var(--sidebar-w);
+  flex:1; min-width:0;
+}
+
+/* ========== Cover ========== */
+.cover {
+  background:
+    radial-gradient(ellipse at 80% 20%, rgba(192,57,43,.04) 0%, transparent 50%),
+    linear-gradient(180deg, var(--bg) 0%, var(--bg2) 100%);
+  padding:80px 64px 64px;
+  border-bottom:1px solid var(--rule);
+  position:relative;
+  overflow:hidden;
+}
+.cover::before {
+  content:''; position:absolute; top:40px; right:60px;
+  width:160px; height:160px;
+  background:var(--shu);
+  clip-path:polygon(0 0, 100% 0, 100% 70%, 70% 100%, 0 100%);
+  opacity:.06;
+}
+.cover-eyebrow {
+  font-family:var(--font-en);
+  font-size:13px; letter-spacing:4px; text-transform:uppercase;
+  color:var(--accent); font-weight:600;
+  margin-bottom:24px;
+  display:flex; align-items:center; gap:12px;
+}
+.cover-eyebrow::before {
+  content:''; width:40px; height:2px; background:var(--accent);
+}
+.cover-title {
+  font-size:48px; font-weight:700; line-height:1.25;
+  letter-spacing:2px; margin-bottom:16px;
+  color:var(--ink);
+}
+.cover-title .dash { color:var(--muted); font-weight:300; margin:0 8px; }
+.cover-subtitle {
+  font-size:18px; color:var(--muted); line-height:1.7;
+  max-width:680px; margin-bottom:32px;
+  font-family:var(--font-body);
+}
+.cover-slogan {
+  display:inline-block;
+  font-size:16px; color:var(--ink);
+  border-left:3px solid var(--accent3);
+  padding:6px 0 6px 16px; margin-bottom:48px;
+  font-style:italic; letter-spacing:1px;
+}
+.cover-stats {
+  display:flex; flex-wrap:wrap; gap:0;
+  border:1px solid var(--rule);
+  background:#fff; border-radius:8px;
+  overflow:hidden; max-width:760px;
+  box-shadow:0 2px 12px rgba(0,0,0,.04);
+}
+.stat-item {
+  flex:1; min-width:140px;
+  padding:24px 20px; text-align:center;
+  border-right:1px solid var(--rule);
+  border-bottom:1px solid var(--rule);
+}
+.stat-item:last-child { border-right:none; }
+.stat-num {
+  font-family:var(--font-en);
+  font-size:36px; font-weight:700; line-height:1;
+  color:var(--ink); margin-bottom:6px;
+}
+.stat-label {
+  font-size:13px; color:var(--muted);
+  font-family:var(--font-sans);
+}
+
+/* ========== Section ========== */
+.section { padding:56px 64px; border-bottom:1px solid var(--rule); }
+.section:last-child { border-bottom:none; }
+.section-eyebrow {
+  font-family:var(--font-en);
+  font-size:12px; letter-spacing:3px; text-transform:uppercase;
+  color:var(--accent); font-weight:600;
+  margin-bottom:10px;
+  display:flex; align-items:center; gap:10px;
+}
+.section-eyebrow .sec-num {
+  display:inline-flex; align-items:center; justify-content:center;
+  width:26px; height:26px; border-radius:50%;
+  border:1.5px solid var(--accent); color:var(--accent);
+  font-size:13px; font-weight:700;
+}
+.section-title {
+  font-size:30px; font-weight:700; letter-spacing:1px;
+  margin-bottom:8px; color:var(--ink);
+  line-height:1.3;
+}
+.section-desc {
+  font-size:15px; color:var(--muted); margin-bottom:36px;
+  max-width:720px;
+}
+
+/* ========== Group Banner ========== */
+.group-banner {
+  display:flex; align-items:center; justify-content:space-between;
+  padding:20px 28px; border-radius:8px;
+  margin-bottom:32px;
+  position:relative; overflow:hidden;
+}
+.group-banner::before {
+  content:''; position:absolute; top:0; left:0; right:0; bottom:0;
+  background:linear-gradient(135deg, currentColor 0%, transparent 60%);
+  opacity:.08;
+}
+.group-banner-info { position:relative; z-index:1; }
+.group-banner-label {
+  font-family:var(--font-en);
+  font-size:11px; letter-spacing:2px; text-transform:uppercase;
+  opacity:.7; margin-bottom:4px; font-weight:600;
+}
+.group-banner-name {
+  font-size:24px; font-weight:700; letter-spacing:1px;
+  color:#fff;
+}
+.group-banner-meta {
+  font-size:13px; opacity:.85; margin-top:4px;
+  font-family:var(--font-sans);
+}
+.group-banner-num {
+  font-family:var(--font-en);
+  font-size:64px; font-weight:700; line-height:1;
+  color:rgba(255,255,255,.25);
+  position:relative; z-index:1;
+}
+
+/* ========== Role Card ========== */
+.role-card {
+  background:#fff; border-radius:8px; padding:0;
+  margin-bottom:20px;
+  box-shadow:0 1px 4px rgba(0,0,0,.05);
+  border:1px solid var(--rule);
+  overflow:hidden;
+}
+.role-card-top { border-top:4px solid var(--accent); }
+.role-card-header {
+  padding:20px 24px 16px;
+  display:flex; align-items:flex-start; gap:16px;
+  border-bottom:1px solid var(--bg3);
+}
+.role-badge {
+  display:inline-flex; align-items:center; justify-content:center;
+  min-width:44px; height:44px; padding:0 10px;
+  border-radius:6px;
+  font-family:var(--font-sans);
+  font-size:12px; font-weight:600; color:#fff;
+  letter-spacing:1px; flex-shrink:0;
+  text-align:center; line-height:1.2;
+}
+.role-info { flex:1; }
+.role-name {
+  font-size:18px; font-weight:700; color:var(--ink);
+  margin-bottom:2px;
+}
+.role-owner {
+  font-size:13px; color:var(--muted);
+  font-family:var(--font-sans);
+}
+.role-newbie-tag {
+  display:inline-block; margin-left:8px;
+  padding:2px 8px; border-radius:4px;
+  background:var(--accent3); color:#fff;
+  font-size:11px; font-weight:600; letter-spacing:1px;
+  font-family:var(--font-sans);
+  vertical-align:middle;
+}
+.role-card-body { padding:20px 24px; }
+.role-section-label {
+  font-family:var(--font-sans);
+  font-size:12px; font-weight:600; letter-spacing:1px;
+  color:var(--muted); text-transform:uppercase;
+  margin-bottom:8px;
+}
+.role-duty {
+  font-size:14px; color:var(--ink); line-height:1.8;
+  margin-bottom:20px;
+}
+
+/* ========== Task List ========== */
+.task-list { list-style:none; margin-bottom:20px; }
+.task-list li {
+  display:flex; align-items:flex-start; justify-content:space-between;
+  padding:8px 0; border-bottom:1px dashed var(--rule);
+  font-size:14px; gap:12px;
+}
+.task-list li:last-child { border-bottom:none; }
+.task-text { flex:1; line-height:1.7; }
+.task-text .phase-tag {
+  display:inline-block; padding:1px 7px; border-radius:3px;
+  font-size:11px; font-weight:600; margin-right:8px;
+  font-family:var(--font-sans); letter-spacing:.5px;
+  color:#fff;
+}
+.task-text .phase-tag.p1 { background:var(--accent); }
+.task-text .phase-tag.p2 { background:var(--accent3); }
+.task-text .phase-tag.p3 { background:var(--accent2); }
+.priority-tag {
+  flex-shrink:0;
+  padding:2px 10px; border-radius:4px;
+  font-size:11px; font-weight:700; letter-spacing:1px;
+  font-family:var(--font-en);
+}
+.priority-tag.p0 { background:var(--shu); color:#fff; }
+.priority-tag.p1 { background:var(--accent3); color:#fff; }
+.priority-tag.p2 { background:var(--accent2); color:#fff; }
+
+/* ========== Interface Line ========== */
+.interface-line {
+  padding:10px 16px; border-radius:6px;
+  background:var(--bg2); border:1px solid var(--rule);
+  font-size:13px; color:var(--muted);
+  font-family:var(--font-sans);
+  margin-top:4px;
+}
+.interface-line strong { color:var(--ink); }
+
+/* ========== Info Grid ========== */
+.info-grid {
+  display:grid; grid-template-columns:repeat(auto-fit, minmax(240px, 1fr));
+  gap:16px; margin-bottom:24px;
+}
+.info-card {
+  background:#fff; border:1px solid var(--rule);
+  border-radius:8px; padding:20px;
+  box-shadow:0 1px 3px rgba(0,0,0,.03);
+}
+.info-card-title {
+  font-size:14px; font-weight:700; color:var(--ink);
+  margin-bottom:8px; display:flex; align-items:center; gap:8px;
+}
+.info-card-title .dot {
+  width:8px; height:8px; border-radius:50%; flex-shrink:0;
+}
+.info-card-text {
+  font-size:13px; color:var(--muted); line-height:1.7;
+}
+
+/* ========== Callout ========== */
+.callout {
+  padding:16px 20px; border-radius:6px;
+  background:var(--bg2); border-left:4px solid var(--accent3);
+  margin:20px 0; font-size:14px; color:var(--ink);
+  line-height:1.7;
+}
+.callout strong { color:var(--accent); }
+.callout.note { border-left-color:var(--accent2); }
+.callout.warn { border-left-color:var(--shu); }
+.callout-title {
+  font-family:var(--font-sans);
+  font-size:13px; font-weight:600; letter-spacing:1px;
+  margin-bottom:6px; display:flex; align-items:center; gap:6px;
+}
+
+/* ========== Table ========== */
+.table-wrap { overflow-x:auto; margin-bottom:24px; border-radius:8px; border:1px solid var(--rule); }
+table { width:100%; border-collapse:collapse; font-size:14px; background:#fff; }
+thead th {
+  background:var(--ink); color:var(--bg2);
+  padding:14px 18px; text-align:left;
+  font-family:var(--font-sans);
+  font-size:13px; font-weight:600; letter-spacing:1px;
+  white-space:nowrap;
+}
+tbody td {
+  padding:12px 18px; border-bottom:1px solid var(--rule);
+  color:var(--ink); line-height:1.6;
+}
+tbody tr:nth-child(even) { background:var(--bg2); }
+tbody tr:last-child td { border-bottom:none; }
+td .tech-badge {
+  display:inline-block; padding:2px 8px; border-radius:3px;
+  background:var(--bg3); font-size:12px; margin:2px;
+  font-family:var(--font-sans); color:var(--ink);
+}
+
+/* ========== Architecture Diagram ========== */
+.arch-diagram {
+  display:flex; flex-direction:column; gap:0;
+  margin-bottom:32px; max-width:780px;
+}
+.arch-layer {
+  display:flex; align-items:center; gap:16px;
+  padding:18px 24px; background:#fff;
+  border:1px solid var(--rule); border-radius:8px;
+  position:relative;
+}
+.arch-layer-icon {
+  width:48px; height:48px; border-radius:8px;
+  display:flex; align-items:center; justify-content:center;
+  font-size:22px; flex-shrink:0;
+  font-family:var(--font-body); font-weight:700;
+  color:#fff;
+}
+.arch-layer-info { flex:1; }
+.arch-layer-name {
+  font-size:16px; font-weight:700; color:var(--ink);
+  margin-bottom:2px;
+}
+.arch-layer-desc {
+  font-size:13px; color:var(--muted);
+  font-family:var(--font-sans);
+}
+.arch-arrow {
+  text-align:center; height:28px; line-height:28px;
+  color:var(--muted); font-size:18px;
+}
+
+/* ========== Flow Diagram ========== */
+.flow-diagram {
+  display:flex; flex-wrap:wrap; align-items:center; gap:0;
+  margin-bottom:24px; padding:24px; background:#fff;
+  border:1px solid var(--rule); border-radius:8px;
+}
+.flow-step {
+  flex:1; min-width:120px; text-align:center;
+  padding:14px 8px; border-radius:6px;
+  background:var(--bg2); border:1px solid var(--rule);
+  font-size:13px; font-weight:600; color:var(--ink);
+  position:relative;
+}
+.flow-step .step-en {
+  display:block; font-family:var(--font-en);
+  font-size:10px; color:var(--muted); font-weight:400;
+  margin-top:2px; letter-spacing:1px;
+}
+.flow-arrow {
+  flex:0 0 auto; padding:0 6px;
+  color:var(--accent); font-size:16px; font-weight:700;
+}
+
+/* ========== Timeline ========== */
+.timeline {
+  display:flex; gap:0; margin-bottom:24px;
+  border:1px solid var(--rule); border-radius:8px; overflow:hidden;
+  background:#fff;
+}
+.timeline-phase {
+  flex:1; padding:24px;
+  border-right:1px solid var(--rule);
+  position:relative;
+}
+.timeline-phase:last-child { border-right:none; }
+.timeline-phase-header { margin-bottom:16px; }
+.timeline-phase-badge {
+  display:inline-block; padding:3px 12px; border-radius:4px;
+  font-family:var(--font-en); font-size:12px; font-weight:700;
+  letter-spacing:1px; color:#fff; margin-bottom:8px;
+}
+.timeline-phase-title {
+  font-size:17px; font-weight:700; color:var(--ink);
+}
+.timeline-phase-date {
+  font-size:13px; color:var(--muted);
+  font-family:var(--font-en); margin-top:2px;
+}
+.timeline-tasks { list-style:none; }
+.timeline-tasks li {
+  font-size:13px; color:var(--ink); padding:4px 0;
+  padding-left:16px; position:relative; line-height:1.6;
+}
+.timeline-tasks li::before {
+  content:''; position:absolute; left:0; top:11px;
+  width:6px; height:6px; border-radius:50%;
+  background:var(--accent3);
+}
+
+/* ========== Wireframe ========== */
+.wireframe-grid {
+  display:grid; grid-template-columns:1fr 1fr; gap:24px;
+  margin-bottom:24px;
+}
+.wf-card {
+  background:#fff; border:1px solid var(--rule);
+  border-radius:8px; overflow:hidden;
+  box-shadow:0 1px 4px rgba(0,0,0,.04);
+}
+.wf-header {
+  padding:14px 20px; background:var(--ink); color:var(--bg2);
+  display:flex; align-items:center; justify-content:space-between;
+}
+.wf-title { font-size:15px; font-weight:700; letter-spacing:1px; }
+.wf-num {
+  font-family:var(--font-en); font-size:12px;
+  opacity:.6; letter-spacing:1px;
+}
+.wf-body { padding:16px; }
+.wf-row { display:flex; gap:8px; margin-bottom:8px; }
+.wf-row:last-child { margin-bottom:0; }
+.wf-box {
+  background:var(--bg2); border:1px dashed var(--muted);
+  border-radius:4px; padding:10px 8px;
+  font-size:11px; color:var(--muted); text-align:center;
+  font-family:var(--font-sans); line-height:1.5;
+  min-height:40px; display:flex; align-items:center; justify-content:center;
+  flex-direction:column; gap:2px;
+}
+.wf-box.dark { background:var(--ink); color:var(--bg2); border-color:var(--ink); border-style:solid; }
+.wf-box.accent { background:var(--bg3); border-color:var(--accent3); }
+.wf-box-title { font-weight:600; font-size:11px; }
+.wf-box-sub { font-size:9px; opacity:.7; }
+.wf-label {
+  font-size:10px; color:var(--accent); font-weight:600;
+  font-family:var(--font-sans); letter-spacing:.5px;
+  margin-bottom:4px; text-transform:uppercase;
+}
+
+/* ========== Newbie Section ========== */
+.newbie-card {
+  background:#fff; border:1px solid var(--rule);
+  border-radius:8px; padding:24px;
+  margin-bottom:16px; display:flex; gap:20px;
+  box-shadow:0 1px 3px rgba(0,0,0,.03);
+}
+.newbie-num {
+  flex-shrink:0; width:50px; height:50px; border-radius:50%;
+  background:var(--accent3); color:#fff;
+  display:flex; align-items:center; justify-content:center;
+  font-family:var(--font-en); font-size:22px; font-weight:700;
+}
+.newbie-content { flex:1; }
+.newbie-role {
+  font-size:16px; font-weight:700; color:var(--ink); margin-bottom:4px;
+}
+.newbie-desc { font-size:14px; color:var(--muted); line-height:1.7; margin-bottom:8px; }
+.newbie-mentor {
+  font-size:13px; color:var(--accent2); font-weight:600;
+  font-family:var(--font-sans);
+}
+
+/* ========== Collab Norms ========== */
+.norm-grid {
+  display:grid; grid-template-columns:repeat(auto-fit, minmax(280px, 1fr));
+  gap:16px; margin-bottom:24px;
+}
+.norm-card {
+  background:#fff; border:1px solid var(--rule);
+  border-radius:8px; padding:20px;
+  border-top:3px solid var(--accent2);
+}
+.norm-card-title {
+  font-size:15px; font-weight:700; color:var(--ink);
+  margin-bottom:8px;
+}
+.norm-card-text { font-size:13px; color:var(--muted); line-height:1.7; }
+
+/* ========== Footer ========== */
+.footer {
+  padding:32px 64px; background:var(--ink); color:var(--muted);
+  text-align:center; font-size:13px;
+  font-family:var(--font-sans);
+}
+.footer .footer-brand {
+  font-family:var(--font-body); font-size:16px;
+  color:var(--bg2); margin-bottom:4px; letter-spacing:2px;
+}
+
+/* ========== Responsive ========== */
+@media (max-width:1024px) {
+  .wireframe-grid { grid-template-columns:1fr; }
+  .timeline { flex-direction:column; }
+  .timeline-phase { border-right:none; border-bottom:1px solid var(--rule); }
+}
+@media (max-width:768px) {
+  .sidebar { transform:translateX(-100%); }
+  .main { margin-left:0; }
+  .cover, .section { padding-left:24px; padding-right:24px; }
+  .cover-title { font-size:32px; }
+  .flow-diagram { flex-direction:column; }
+  .flow-arrow { transform:rotate(90deg); padding:4px 0; }
+}
+</style>
+</head>
+<body>
+<div class="layout">
+
+<!-- ========== Sidebar ========== -->
+<aside class="sidebar">
+  <div class="logo">
+    <div class="logo-mark"><span class="seal">墨</span>影文心</div>
+    <div class="logo-sub">Mo Ying Zhi Xue · Handbook</div>
+  </div>
+
+  <div class="nav-group">
+    <div class="nav-group-title">总览</div>
+    <a class="nav-item" href="#cover"><span class="nav-num">00</span>封面</a>
+    <a class="nav-item" href="#architecture"><span class="nav-num">01</span>项目架构总览</a>
+    <a class="nav-item" href="#collaboration"><span class="nav-num">02</span>团队协作流程</a>
+  </div>
+
+  <div class="nav-group">
+    <div class="nav-group-title">分组职责</div>
+    <a class="nav-item" href="#management"><span class="nav-num">03</span>管理组</a>
+    <a class="nav-item" href="#ai-model"><span class="nav-num">04</span>AI模型组</a>
+    <a class="nav-item" href="#development"><span class="nav-num">05</span>开发组</a>
+    <a class="nav-item" href="#content-data"><span class="nav-num">06</span>内容数据组</a>
+    <a class="nav-item" href="#design-test"><span class="nav-num">07</span>设计测试组</a>
+  </div>
+
+  <div class="nav-group">
+    <div class="nav-group-title">培养与原型</div>
+    <a class="nav-item" href="#newbie"><span class="nav-num">08</span>新生培养策略</a>
+    <a class="nav-item" href="#wireframes"><span class="nav-num">09</span>原型图说明</a>
+  </div>
+</aside>
+
+<!-- ========== Main ========== -->
+<main class="main">
+
+<!-- ========== Cover ========== -->
+<section class="cover" id="cover">
+  <div class="cover-eyebrow">MO YING ZHI XUE · TEAM HANDBOOK</div>
+  <h1 class="cover-title">墨影智学<span class="dash">—</span>团队分工文档</h1>
+  <p class="cover-subtitle">文本-漫画-动画跨媒介教学智能体<br>
+  比赛编号 XH-202620 · 发榜单位：科大讯飞 · 平台：讯飞星火 / 星火学科大模型平台</p>
+  <div class="cover-slogan">"先完成，再完善 — 每个人都清楚自己做什么"</div>
+  <div class="cover-stats">
+    <div class="stat-item">
+      <div class="stat-num">10</div>
+      <div class="stat-label">团队成员</div>
+    </div>
+    <div class="stat-item">
+      <div class="stat-num">5</div>
+      <div class="stat-label">组别</div>
+    </div>
+    <div class="stat-item">
+      <div class="stat-num">10</div>
+      <div class="stat-label">角色</div>
+    </div>
+    <div class="stat-item">
+      <div class="stat-num">4</div>
+      <div class="stat-label">原型图</div>
+    </div>
+    <div class="stat-item">
+      <div class="stat-num">3</div>
+      <div class="stat-label">新生培养</div>
+    </div>
+  </div>
+</section>
+<!-- ========== 01 项目架构总览 ========== -->
+<section class="section" id="architecture">
+  <div class="section-eyebrow"><span class="sec-num">01</span> ARCHITECTURE OVERVIEW</div>
+  <h2 class="section-title">项目架构总览</h2>
+  <p class="section-desc">墨影智学平台采用五层架构设计，从前端交互到后端服务、AI模型推理、知识库检索与数据存储，各层职责清晰、接口规范，支撑双叙事赛道与教学科研全流程。</p>
+
+  <!-- 系统架构图 -->
+  <h3 style="font-size:18px;font-weight:700;margin-bottom:16px;color:var(--ink);">系统架构图</h3>
+  <div class="arch-diagram">
+    <div class="arch-layer">
+      <div class="arch-layer-icon" style="background:var(--accent2);">前</div>
+      <div class="arch-layer-info">
+        <div class="arch-layer-name">前端层 · Frontend Layer</div>
+        <div class="arch-layer-desc">Vue3 + TailwindCSS · 水墨国风UI · 四大板块交互界面</div>
+      </div>
+    </div>
+    <div class="arch-arrow">&#9660;</div>
+    <div class="arch-layer">
+      <div class="arch-layer-icon" style="background:var(--tech);">后</div>
+      <div class="arch-layer-info">
+        <div class="arch-layer-name">后端层 · Backend Layer</div>
+        <div class="arch-layer-desc">FastAPI + Celery · 异步任务队列 · RESTful API设计</div>
+      </div>
+    </div>
+    <div class="arch-arrow">&#9660;</div>
+    <div class="arch-layer">
+      <div class="arch-layer-icon" style="background:var(--accent);">智</div>
+      <div class="arch-layer-info">
+        <div class="arch-layer-name">AI模型层 · AI Model Layer</div>
+        <div class="arch-layer-desc">讯飞星火 + LoRA微调 + 星辰Agent双智能体（文改Agent / 墨影画风Agent）</div>
+      </div>
+    </div>
+    <div class="arch-arrow">&#9660;</div>
+    <div class="arch-layer">
+      <div class="arch-layer-icon" style="background:var(--accent3);">知</div>
+      <div class="arch-layer-info">
+        <div class="arch-layer-name">知识库层 · Knowledge Layer</div>
+        <div class="arch-layer-desc">双RAG知识库（国学文本库 + 国风漫画图库）· Chroma向量检索 · 多模态图文对齐</div>
+      </div>
+    </div>
+    <div class="arch-arrow">&#9660;</div>
+    <div class="arch-layer">
+      <div class="arch-layer-icon" style="background:var(--muted);">储</div>
+      <div class="arch-layer-info">
+        <div class="arch-layer-name">存储层 · Storage Layer</div>
+        <div class="arch-layer-desc">MinIO对象存储（图像/动画） + PostgreSQL关系型数据库（用户/项目/元数据）</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 技术栈总览表 -->
+  <h3 style="font-size:18px;font-weight:700;margin-bottom:16px;color:var(--ink);">技术栈总览</h3>
+  <div class="table-wrap">
+    <table>
+      <thead>
+        <tr><th>架构层</th><th>技术选型</th><th>核心职责</th></tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><strong>前端层</strong></td>
+          <td><span class="tech-badge">Vue3</span><span class="tech-badge">TailwindCSS</span><span class="tech-badge">Vite</span></td>
+          <td>水墨国风UI实现、四大板块页面、交互功能（留白滑块/跨版本对照/文漫互转）</td>
+        </tr>
+        <tr>
+          <td><strong>后端层</strong></td>
+          <td><span class="tech-badge">FastAPI</span><span class="tech-badge">Celery</span><span class="tech-badge">Redis</span></td>
+          <td>API设计、异步任务队列、数据库交互、讯飞星火API对接</td>
+        </tr>
+        <tr>
+          <td><strong>AI模型层</strong></td>
+          <td><span class="tech-badge">讯飞星火</span><span class="tech-badge">LoRA微调</span><span class="tech-badge">星辰Agent</span></td>
+          <td>双Agent智能体（文改/墨影画风）、工作流编排、古文理解与水墨画面生成</td>
+        </tr>
+        <tr>
+          <td><strong>知识库层</strong></td>
+          <td><span class="tech-badge">Chroma</span><span class="tech-badge">双RAG</span><span class="tech-badge">多模态对齐</span></td>
+          <td>国学文本库与国风漫画图库的向量检索、多模态图文对齐、内容可追溯</td>
+        </tr>
+        <tr>
+          <td><strong>存储层</strong></td>
+          <td><span class="tech-badge">MinIO</span><span class="tech-badge">PostgreSQL</span></td>
+          <td>图像/动画对象存储、用户/项目/元数据关系型存储</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- 核心业务流 -->
+  <h3 style="font-size:18px;font-weight:700;margin-bottom:16px;color:var(--ink);">核心业务流</h3>
+  <div class="flow-diagram">
+    <div class="flow-step">古文输入<span class="step-en">Input</span></div>
+    <div class="flow-arrow">&#8594;</div>
+    <div class="flow-step">语义解析<span class="step-en">Parse</span></div>
+    <div class="flow-arrow">&#8594;</div>
+    <div class="flow-step">知识检索<span class="step-en">Retrieve</span></div>
+    <div class="flow-arrow">&#8594;</div>
+    <div class="flow-step">剧本分镜<span class="step-en">Script</span></div>
+    <div class="flow-arrow">&#8594;</div>
+    <div class="flow-step">水墨画面<span class="step-en">Render</span></div>
+    <div class="flow-arrow">&#8594;</div>
+    <div class="flow-step">动画合成<span class="step-en">Animate</span></div>
+    <div class="flow-arrow">&#8594;</div>
+    <div class="flow-step">教学封装<span class="step-en">Package</span></div>
+    <div class="flow-arrow">&#8594;</div>
+    <div class="flow-step">科研分析<span class="step-en">Analyze</span></div>
+  </div>
+
+  <div class="callout note">
+    <div class="callout-title">三大特色</div>
+    <strong>双叙事赛道 + 文漫互转</strong>：白话小说影视改编与国学典籍水墨动画双轨并行，支持文本与漫画双向转换。<br>
+    <strong>教学场景国学实训</strong>：助教课件一键生成、助学漫画式写作训练、助研图像叙事量化研究。<br>
+    <strong>技术垂类模型</strong>：双数据集 + 双Agent + 工作流编排，构建面向人文通识一流学科的垂类教学智能体。
+  </div>
+</section>
+
+<!-- ========== 02 团队协作流程 ========== -->
+<section class="section" id="collaboration">
+  <div class="section-eyebrow"><span class="sec-num">02</span> COLLABORATION WORKFLOW</div>
+  <h2 class="section-title">团队协作流程</h2>
+  <p class="section-desc">10人团队分为5个组别，通过清晰的接口定义与协作规范，确保各组高效协同。项目按三阶段推进，每阶段有明确的里程碑与交付物。</p>
+
+  <!-- 分组与协作关系 -->
+  <h3 style="font-size:18px;font-weight:700;margin-bottom:16px;color:var(--ink);">分组与协作关系</h3>
+  <div class="info-grid">
+    <div class="info-card">
+      <div class="info-card-title"><span class="dot" style="background:var(--mgmt);"></span>管理组（1人）</div>
+      <div class="info-card-text">统筹全局，协调所有组别，对接指导教师与赛事方，管理进度与风险。</div>
+    </div>
+    <div class="info-card">
+      <div class="info-card-title"><span class="dot" style="background:var(--tech);"></span>AI模型组（3人）</div>
+      <div class="info-card-text">核心引擎，双Agent开发、LoRA微调、双RAG知识库构建，为前后端提供模型能力。</div>
+    </div>
+    <div class="info-card">
+      <div class="info-card-title"><span class="dot" style="background:var(--tech);"></span>开发组（2人）</div>
+      <div class="info-card-text">系统实现，前后端开发，对接AI模型组API，构建四大板块功能页面。</div>
+    </div>
+    <div class="info-card">
+      <div class="info-card-title"><span class="dot" style="background:var(--content);"></span>内容数据组（2人）</div>
+      <div class="info-card-text">数据供给，国学文本与视觉数据收集标注，为RAG知识库与模型微调提供数据源。</div>
+    </div>
+    <div class="info-card">
+      <div class="info-card-title"><span class="dot" style="background:var(--design);"></span>设计测试组（2人）</div>
+      <div class="info-card-text">质量保障，UI设计、功能测试、文档撰写与提交材料整理。</div>
+    </div>
+  </div>
+
+  <div class="callout">
+    <div class="callout-title">协作链路</div>
+    内容数据组（数据源）&#8594; AI模型组（模型能力）&#8594; 开发组（系统集成）&#8594; 设计测试组（设计/测试/文档）；管理组横向统筹全链路。
+  </div>
+
+  <!-- 协作规范 -->
+  <h3 style="font-size:18px;font-weight:700;margin-bottom:16px;color:var(--ink);">协作规范</h3>
+  <div class="norm-grid">
+    <div class="norm-card">
+      <div class="norm-card-title">Git 版本管理</div>
+      <div class="norm-card-text">采用 Git Flow 分支策略，main/master 为稳定分支，develop 为开发分支，feature/* 为功能分支。所有代码合并前需通过 Code Review，提交信息遵循 Conventional Commits 规范。</div>
+    </div>
+    <div class="norm-card">
+      <div class="norm-card-title">每日站会（15分钟）</div>
+      <div class="norm-card-text">每日固定时间召开线上站会，每人简述：昨天做了什么、今天计划做什么、遇到什么阻碍。站会由项目经理主持，控制在15分钟内，聚焦问题暴露与协调。</div>
+    </div>
+    <div class="norm-card">
+      <div class="norm-card-title">周报制度</div>
+      <div class="norm-card-text">每周五提交个人周报，包含本周完成事项、下周计划、风险与求助。项目经理汇总后形成项目周报，同步至指导教师与全队。</div>
+    </div>
+    <div class="norm-card">
+      <div class="norm-card-title">代码评审</div>
+      <div class="norm-card-text">所有 Pull Request 需至少1名组内成员 Review 通过后方可合并。核心模块（Agent工作流/RAG检索/动画生成）需2人以上 Review，确保代码质量与可维护性。</div>
+    </div>
+  </div>
+
+  <!-- 三阶段时间线 -->
+  <h3 style="font-size:18px;font-weight:700;margin-bottom:16px;color:var(--ink);">三阶段时间线</h3>
+  <div class="timeline">
+    <div class="timeline-phase">
+      <div class="timeline-phase-header">
+        <span class="timeline-phase-badge" style="background:var(--accent);">PHASE 1</span>
+        <div class="timeline-phase-title">MVP 基础搭建</div>
+        <div class="timeline-phase-date">8/8 — 8/21（2周）</div>
+      </div>
+      <ul class="timeline-tasks">
+        <li>完成项目计划与分工确认</li>
+        <li>搭建协作环境（Git/Jira/文档）</li>
+        <li>双Agent基础配置与核心工作流编排</li>
+        <li>LoRA基础训练（蔡志忠水墨画风）</li>
+        <li>文本库RAG搭建与基础语义检索</li>
+        <li>基础API框架与数据库设计</li>
+        <li>水墨国风设计系统与核心页面</li>
+        <li>国学文本与视觉数据收集启动</li>
+      </ul>
+    </div>
+    <div class="timeline-phase">
+      <div class="timeline-phase-header">
+        <span class="timeline-phase-badge" style="background:var(--accent3);">PHASE 2</span>
+        <div class="timeline-phase-title">功能增强</div>
+        <div class="timeline-phase-date">8/22 — 9/4（2周）</div>
+      </div>
+      <ul class="timeline-tasks">
+        <li>文漫互转功能与多风格画面支持</li>
+        <li>画风优化（留白/线条/对比度）</li>
+        <li>视觉库RAG与多模态图文对齐</li>
+        <li>四大板块全页面API与前端实现</li>
+        <li>交互功能（留白控制/跨版本对照）</li>
+        <li>组织用户测试（2+真实用户）</li>
+        <li>中期进度评估与风险调整</li>
+      </ul>
+    </div>
+    <div class="timeline-phase">
+      <div class="timeline-phase-header">
+        <span class="timeline-phase-badge" style="background:var(--accent2);">PHASE 3</span>
+        <div class="timeline-phase-title">冲刺交付</div>
+        <div class="timeline-phase-date">9/5 — 9/15（11天）</div>
+      </div>
+      <ul class="timeline-tasks">
+        <li>性能调优与稳定性测试</li>
+        <li>检索准确性验证与内容可追溯</li>
+        <li>3个典型测试案例准备</li>
+        <li>Demo部署与服务器配置</li>
+        <li>3分钟演示视频制作</li>
+        <li>回归测试与效果验证报告定稿</li>
+        <li>7项提交材料统筹与最终质量把关</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="callout warn">
+    <div class="callout-title">时间提醒</div>
+    提交截止日期为 <strong>9月15日</strong>，今天为 8月8日，剩余约 <strong>5周</strong>。Phase 1 必须在 8/21 前完成 MVP 核心链路，确保后续增强与冲刺有充足时间。
+  </div>
+ </section>
+
+<!-- ========== 03 管理组 ========== -->
+<section class="section" id="management">
+  <div class="section-eyebrow"><span class="sec-num">03</span> MANAGEMENT GROUP</div>
+  <h2 class="section-title">管理组</h2>
+  <p class="section-desc">统筹全局，协调各方，确保项目按时高质量交付。管理组是团队的"指挥中枢"，负责进度管控、风险管理、对外沟通与提交材料统筹。</p>
+
+  <!-- Group Banner -->
+  <div class="group-banner" style="background:var(--mgmt); color:var(--mgmt);">
+    <div class="group-banner-info">
+      <div class="group-banner-label">GROUP 01 · MANAGEMENT</div>
+      <div class="group-banner-name">管理组</div>
+      <div class="group-banner-meta">1人 · 项目协调 / 进度管理 / 提交统筹 / 对外沟通</div>
+    </div>
+    <div class="group-banner-num">01</div>
+  </div>
+
+  <!-- 角色卡: 项目经理 / 队长 -->
+  <div class="role-card role-card-top" style="border-top-color:var(--mgmt);">
+    <div class="role-card-header">
+      <div class="role-badge" style="background:var(--mgmt);">项目经理</div>
+      <div class="role-info">
+        <div class="role-name">项目经理 / 队长</div>
+        <div class="role-owner">负责人：队长</div>
+      </div>
+    </div>
+    <div class="role-card-body">
+      <div class="role-section-label">核心职责</div>
+      <p class="role-duty">整体项目协调、进度管理、提交材料统筹、对外沟通（指导教师/赛事方）、风险管理。负责将5周时间线拆解为可执行任务，确保各组接口对齐，及时暴露并解决阻塞问题。</p>
+
+      <div class="role-section-label">三阶段任务</div>
+      <ul class="task-list">
+        <li>
+          <span class="task-text"><span class="phase-tag p1">Phase1</span>制定详细项目计划、确认分工、搭建协作环境（Git/Jira/文档）、赛事平台注册</span>
+          <span class="priority-tag p0">P0</span>
+        </li>
+        <li>
+          <span class="task-text"><span class="phase-tag p2">Phase2</span>协调模块集成、组织用户测试（2+真实用户）、中期进度评估</span>
+          <span class="priority-tag p1">P1</span>
+        </li>
+        <li>
+          <span class="task-text"><span class="phase-tag p3">Phase3</span>统筹7项提交材料、协调演示视频制作、最终质量把关</span>
+          <span class="priority-tag p0">P0</span>
+        </li>
+      </ul>
+
+      <div class="role-section-label">协作接口</div>
+      <div class="interface-line">对接 <strong>所有组</strong>（进度协调）、<strong>指导教师</strong>（汇报沟通）、<strong>赛事方</strong>（提交材料/平台注册）</div>
+    </div>
+  </div>
+</section>
+
+<!-- ========== 04 AI模型组 ========== -->
+<section class="section" id="ai-model">
+  <div class="section-eyebrow"><span class="sec-num">04</span> AI MODEL GROUP</div>
+  <h2 class="section-title">AI模型组</h2>
+  <p class="section-desc">项目的核心引擎团队，负责双Agent智能体开发、水墨画风LoRA微调训练、双RAG知识库构建。三人分工明确，覆盖从模型能力到数据检索的完整AI链路。</p>
+
+  <!-- Group Banner -->
+  <div class="group-banner" style="background:var(--tech); color:var(--tech);">
+    <div class="group-banner-info">
+      <div class="group-banner-label">GROUP 02 · AI MODEL</div>
+      <div class="group-banner-name">AI模型组</div>
+      <div class="group-banner-meta">3人 · Agent开发 / LoRA微调 / RAG知识库</div>
+    </div>
+    <div class="group-banner-num">02</div>
+  </div>
+
+  <!-- 角色卡A: Agent开发工程师 -->
+  <div class="role-card role-card-top" style="border-top-color:var(--tech);">
+    <div class="role-card-header">
+      <div class="role-badge" style="background:var(--tech);">Agent<br>工程师</div>
+      <div class="role-info">
+        <div class="role-name">Agent开发工程师</div>
+        <div class="role-owner">负责人：Agent开发工程师</div>
+      </div>
+    </div>
+    <div class="role-card-body">
+      <div class="role-section-label">核心职责</div>
+      <p class="role-duty">基于星辰Agent搭建文改Agent和墨影画风Agent、智能工作流编排、Agent间协同。负责将古文解析、剧本拆分、画面生成等环节串联为自动化工作流，实现"古文&#8594;分镜&#8594;漫画&#8594;动画"的核心链路。</p>
+
+      <div class="role-section-label">三阶段任务</div>
+      <ul class="task-list">
+        <li>
+          <span class="task-text"><span class="phase-tag p1">Phase1</span>双Agent基础配置、核心工作流（古文&#8594;分镜&#8594;漫画&#8594;动画）编排</span>
+          <span class="priority-tag p0">P0</span>
+        </li>
+        <li>
+          <span class="task-text"><span class="phase-tag p2">Phase2</span>文漫互转功能、Agent优化（提升古文理解准确度）、多风格画面支持</span>
+          <span class="priority-tag p1">P1</span>
+        </li>
+        <li>
+          <span class="task-text"><span class="phase-tag p3">Phase3</span>性能调优、稳定性测试、3个典型测试案例准备</span>
+          <span class="priority-tag p0">P0</span>
+        </li>
+      </ul>
+
+      <div class="role-section-label">协作接口</div>
+      <div class="interface-line">对接 <strong>后端开发</strong>（API对接）、<strong>内容数据组</strong>（数据需求）</div>
+    </div>
+  </div>
+
+  <!-- 角色卡B: 模型微调工程师 -->
+  <div class="role-card role-card-top" style="border-top-color:var(--tech);">
+    <div class="role-card-header">
+      <div class="role-badge" style="background:var(--tech);">模型微调<br>工程师</div>
+      <div class="role-info">
+        <div class="role-name">模型微调工程师</div>
+        <div class="role-owner">负责人：模型微调工程师</div>
+      </div>
+    </div>
+    <div class="role-card-body">
+      <div class="role-section-label">核心职责</div>
+      <p class="role-duty">水墨画风LoRA微调训练、模型优化、画风约束参数调优。以蔡志忠极简水墨画风为基线，通过LoRA微调让模型掌握留白、线条、对比度等水墨画核心特征，确保生成画面符合国风美学。</p>
+
+      <div class="role-section-label">三阶段任务</div>
+      <ul class="task-list">
+        <li>
+          <span class="task-text"><span class="phase-tag p1">Phase1</span>训练数据准备、LoRA基础训练（蔡志忠极简水墨画风）</span>
+          <span class="priority-tag p0">P0</span>
+        </li>
+        <li>
+          <span class="task-text"><span class="phase-tag p2">Phase2</span>画风优化（留白/线条/对比度）、赛道A多风格支持</span>
+          <span class="priority-tag p1">P1</span>
+        </li>
+        <li>
+          <span class="task-text"><span class="phase-tag p3">Phase3</span>模型固化、推理速度优化</span>
+          <span class="priority-tag p1">P1</span>
+        </li>
+      </ul>
+
+      <div class="role-section-label">协作接口</div>
+      <div class="interface-line">对接 <strong>视觉数据工程师</strong>（训练数据）、<strong>前端开发</strong>（参数接口）</div>
+    </div>
+  </div>
+
+  <!-- 角色卡C: RAG知识库工程师 -->
+  <div class="role-card role-card-top" style="border-top-color:var(--tech);">
+    <div class="role-card-header">
+      <div class="role-badge" style="background:var(--tech);">RAG<br>工程师</div>
+      <div class="role-info">
+        <div class="role-name">RAG知识库工程师</div>
+        <div class="role-owner">负责人：RAG知识库工程师</div>
+      </div>
+    </div>
+    <div class="role-card-body">
+      <div class="role-section-label">核心职责</div>
+      <p class="role-duty">双RAG知识库构建（国学文本库+国风漫画图库）、向量检索、多模态图文对齐。基于Chroma构建文本与视觉双知识库，实现语义检索与图文对齐，确保生成内容有据可查、可追溯。</p>
+
+      <div class="role-section-label">三阶段任务</div>
+      <ul class="task-list">
+        <li>
+          <span class="task-text"><span class="phase-tag p1">Phase1</span>文本库RAG搭建（诸子百家/唐诗/史记）、基础语义检索</span>
+          <span class="priority-tag p0">P0</span>
+        </li>
+        <li>
+          <span class="task-text"><span class="phase-tag p2">Phase2</span>视觉库RAG、多模态图文对齐、检索准确度优化</span>
+          <span class="priority-tag p1">P1</span>
+        </li>
+        <li>
+          <span class="task-text"><span class="phase-tag p3">Phase3</span>检索准确性验证、内容可追溯（引用标注）</span>
+          <span class="priority-tag p0">P0</span>
+        </li>
+      </ul>
+
+      <div class="role-section-label">协作接口</div>
+      <div class="interface-line">对接 <strong>文本数据工程师</strong>（知识源）、<strong>后端开发</strong>（检索API）</div>
+    </div>
+  </div>
+</section>
+
+<!-- ========== 05 开发组 ========== -->
+<section class="section" id="development">
+  <div class="section-eyebrow"><span class="sec-num">05</span> DEVELOPMENT GROUP</div>
+  <h2 class="section-title">开发组</h2>
+  <p class="section-desc">系统实现的核心力量，负责前后端开发与系统集成。后端对接AI模型组API与数据库，前端实现水墨国风UI与四大板块交互功能。前端可带1名新生协助开发。</p>
+
+  <!-- Group Banner (蓝灰色区分) -->
+  <div class="group-banner" style="background:#5a7d8c; color:#5a7d8c;">
+    <div class="group-banner-info">
+      <div class="group-banner-label">GROUP 03 · DEVELOPMENT</div>
+      <div class="group-banner-name">开发组</div>
+      <div class="group-banner-meta">2人 · 后端开发 / 前端开发（可带1名新生协助）</div>
+    </div>
+    <div class="group-banner-num">03</div>
+  </div>
+
+  <!-- 角色卡A: 后端开发工程师 -->
+  <div class="role-card role-card-top" style="border-top-color:#5a7d8c;">
+    <div class="role-card-header">
+      <div class="role-badge" style="background:#5a7d8c;">后端<br>工程师</div>
+      <div class="role-info">
+        <div class="role-name">后端开发工程师</div>
+        <div class="role-owner">负责人：后端开发工程师</div>
+      </div>
+    </div>
+    <div class="role-card-body">
+      <div class="role-section-label">核心职责</div>
+      <p class="role-duty">FastAPI后端开发、数据库设计、异步任务队列、API设计。负责构建稳定高效的后端服务，对接讯飞星火API，管理Celery异步任务（动画生成等耗时任务），设计PostgreSQL数据库schema。</p>
+
+      <div class="role-section-label">三阶段任务</div>
+      <ul class="task-list">
+        <li>
+          <span class="task-text"><span class="phase-tag p1">Phase1</span>基础API框架、PostgreSQL数据库设计、Celery异步队列、与讯飞星火API对接</span>
+          <span class="priority-tag p0">P0</span>
+        </li>
+        <li>
+          <span class="task-text"><span class="phase-tag p2">Phase2</span>教学工作台API、数字人文实验室API、文漫互转API</span>
+          <span class="priority-tag p1">P1</span>
+        </li>
+        <li>
+          <span class="task-text"><span class="phase-tag p3">Phase3</span>性能优化、Demo部署、服务器配置</span>
+          <span class="priority-tag p0">P0</span>
+        </li>
+      </ul>
+
+      <div class="role-section-label">协作接口</div>
+      <div class="interface-line">对接 <strong>AI模型组</strong>（模型调用）、<strong>前端开发</strong>（API对接）</div>
+    </div>
+  </div>
+
+  <!-- 角色卡B: 前端开发工程师 -->
+  <div class="role-card role-card-top" style="border-top-color:#5a7d8c;">
+    <div class="role-card-header">
+      <div class="role-badge" style="background:#5a7d8c;">前端<br>工程师</div>
+      <div class="role-info">
+        <div class="role-name">前端开发工程师</div>
+        <div class="role-owner">负责人：前端开发工程师<span class="role-newbie-tag">可带新生</span></div>
+      </div>
+    </div>
+    <div class="role-card-body">
+      <div class="role-section-label">核心职责</div>
+      <p class="role-duty">Vue3前端开发、水墨国风UI实现、交互功能（留白滑块/跨版本对照）。负责将设计稿转化为高质量前端页面，实现四大板块全部交互功能，确保水墨国风视觉风格的一致性。</p>
+
+      <div class="role-section-label">三阶段任务</div>
+      <ul class="task-list">
+        <li>
+          <span class="task-text"><span class="phase-tag p1">Phase1</span>基础UI框架、黑白水墨国风设计系统、墨漫工坊核心页面</span>
+          <span class="priority-tag p0">P0</span>
+        </li>
+        <li>
+          <span class="task-text"><span class="phase-tag p2">Phase2</span>四大板块全页面、交互功能（留白控制/跨版本对照/文漫互转）</span>
+          <span class="priority-tag p1">P1</span>
+        </li>
+        <li>
+          <span class="task-text"><span class="phase-tag p3">Phase3</span>UI优化、响应式适配、演示流程页面串联</span>
+          <span class="priority-tag p0">P0</span>
+        </li>
+      </ul>
+
+      <div class="role-section-label">协作接口</div>
+      <div class="interface-line">对接 <strong>UI设计师</strong>（设计稿）、<strong>后端开发</strong>（API对接）</div>
+
+      <div class="callout note" style="margin-top:16px;">
+        <div class="callout-title">新生培养提示</div>
+        前端开发工程师可带 <strong>1名新生</strong> 协助前端开发，新生可从组件实现、页面搭建等任务入手，有设计稿和代码参考。详见<a href="#newbie" style="color:var(--accent2);text-decoration:underline;">新生培养策略</a>。
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ========== 06 内容数据组 ========== -->
+<section class="section" id="content-data">
+  <div class="section-eyebrow"><span class="sec-num">06</span> CONTENT & DATA GROUP</div>
+  <h2 class="section-title">内容数据组</h2>
+  <p class="section-desc">项目的数据供给源头，负责国学典籍文本与视觉数据的收集、清洗、标注。为RAG知识库与模型微调提供高质量数据支撑。含1名新生参与视觉数据工作。</p>
+
+  <!-- Group Banner -->
+  <div class="group-banner" style="background:var(--content); color:var(--content);">
+    <div class="group-banner-info">
+      <div class="group-banner-label">GROUP 04 · CONTENT & DATA</div>
+      <div class="group-banner-name">内容数据组</div>
+      <div class="group-banner-meta">2人（含1新生）· 文本数据 / 视觉数据收集标注</div>
+    </div>
+    <div class="group-banner-num">04</div>
+  </div>
+
+  <!-- 角色卡A: 文本数据工程师 -->
+  <div class="role-card role-card-top" style="border-top-color:var(--content);">
+    <div class="role-card-header">
+      <div class="role-badge" style="background:var(--content);">文本数据<br>工程师</div>
+      <div class="role-info">
+        <div class="role-name">文本数据工程师</div>
+        <div class="role-owner">负责人：文本数据工程师</div>
+      </div>
+    </div>
+    <div class="role-card-body">
+      <div class="role-section-label">核心职责</div>
+      <p class="role-duty">国学典籍文本收集、清洗标注、知识库内容构建、内容准确性审核。负责诸子百家、唐诗、史记等经典文本的结构化处理，确保文本的准确性与可检索性，为RAG知识库提供高质量文本源。</p>
+
+      <div class="role-section-label">三阶段任务</div>
+      <ul class="task-list">
+        <li>
+          <span class="task-text"><span class="phase-tag p1">Phase1</span>诸子百家/唐诗/史记文本收集与结构化标注</span>
+          <span class="priority-tag p0">P0</span>
+        </li>
+        <li>
+          <span class="task-text"><span class="phase-tag p2">Phase2</span>中文系戏剧改编教材收集、扩展文本库</span>
+          <span class="priority-tag p1">P1</span>
+        </li>
+        <li>
+          <span class="task-text"><span class="phase-tag p3">Phase3</span>数据质量验证、3个典型测试案例准备（含准确性论证）</span>
+          <span class="priority-tag p0">P0</span>
+        </li>
+      </ul>
+
+      <div class="role-section-label">协作接口</div>
+      <div class="interface-line">对接 <strong>RAG知识库工程师</strong>（知识源）</div>
+    </div>
+  </div>
+
+  <!-- 角色卡B: 视觉数据工程师（新生） -->
+  <div class="role-card role-card-top" style="border-top-color:var(--content);">
+    <div class="role-card-header">
+      <div class="role-badge" style="background:var(--content);">视觉数据<br>工程师</div>
+      <div class="role-info">
+        <div class="role-name">视觉数据工程师<span class="role-newbie-tag">新生</span></div>
+        <div class="role-owner">负责人：视觉数据工程师（新生）</div>
+      </div>
+    </div>
+    <div class="role-card-body">
+      <div class="role-section-label">核心职责</div>
+      <p class="role-duty">蔡志忠漫画分格图集收集、图文对齐标注、视觉数据集构建。负责收集整理公开正版蔡志忠漫画分格图集，完成画面描述与古文原文的图文对齐标注，为LoRA微调提供训练数据。</p>
+
+      <div class="role-section-label">三阶段任务</div>
+      <ul class="task-list">
+        <li>
+          <span class="task-text"><span class="phase-tag p1">Phase1</span>公开正版蔡志忠漫画分格图集收集与整理</span>
+          <span class="priority-tag p1">P1</span>
+        </li>
+        <li>
+          <span class="task-text"><span class="phase-tag p2">Phase2</span>图文对齐标注（画面描述&#8596;古文原文）、分镜数据提取</span>
+          <span class="priority-tag p1">P1</span>
+        </li>
+        <li>
+          <span class="task-text"><span class="phase-tag p3">Phase3</span>数据集质量验证、版权合规检查</span>
+          <span class="priority-tag p2">P2</span>
+        </li>
+      </ul>
+
+      <div class="role-section-label">协作接口</div>
+      <div class="interface-line">对接 <strong>模型微调工程师</strong>（训练数据）</div>
+
+      <div class="callout note" style="margin-top:16px;">
+        <div class="callout-title">新生标记</div>
+        此角色适合新生，有明确交付物（图集+标注）和指导。由模型微调工程师负责指导，详见<a href="#newbie" style="color:var(--accent2);text-decoration:underline;">新生培养策略</a>。
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ========== 07 设计测试组 ========== -->
+<section class="section" id="design-test">
+  <div class="section-eyebrow"><span class="sec-num">07</span> DESIGN & TEST GROUP</div>
+  <h2 class="section-title">设计测试组</h2>
+  <p class="section-desc">项目的质量保障与视觉呈现团队，负责水墨国风UI设计、功能测试、文档撰写与提交材料整理。含1名新生参与测试与文档工作。</p>
+
+  <!-- Group Banner -->
+  <div class="group-banner" style="background:var(--design); color:var(--design);">
+    <div class="group-banner-info">
+      <div class="group-banner-label">GROUP 05 · DESIGN & TEST</div>
+      <div class="group-banner-name">设计测试组</div>
+      <div class="group-banner-meta">2人（含1新生）· UI设计 / 测试 / 文档 / 演示视频</div>
+    </div>
+    <div class="group-banner-num">05</div>
+  </div>
+
+  <!-- 角色卡A: UI/UX设计师 -->
+  <div class="role-card role-card-top" style="border-top-color:var(--design);">
+    <div class="role-card-header">
+      <div class="role-badge" style="background:var(--design);">UI/UX<br>设计师</div>
+      <div class="role-info">
+        <div class="role-name">UI/UX设计师</div>
+        <div class="role-owner">负责人：UI/UX设计师</div>
+      </div>
+    </div>
+    <div class="role-card-body">
+      <div class="role-section-label">核心职责</div>
+      <p class="role-duty">水墨国风UI设计系统、页面视觉设计、动画效果、演示视频制作。负责构建统一的水墨国风设计语言（色彩/字体/组件规范），输出四大板块全部页面设计稿，并制作最终3分钟演示视频。</p>
+
+      <div class="role-section-label">三阶段任务</div>
+      <ul class="task-list">
+        <li>
+          <span class="task-text"><span class="phase-tag p1">Phase1</span>水墨国风设计系统（色彩/字体/组件）、核心页面设计（墨漫工坊）</span>
+          <span class="priority-tag p0">P0</span>
+        </li>
+        <li>
+          <span class="task-text"><span class="phase-tag p2">Phase2</span>四大板块全页面设计、交互原型、动画效果设计</span>
+          <span class="priority-tag p1">P1</span>
+        </li>
+        <li>
+          <span class="task-text"><span class="phase-tag p3">Phase3</span>3分钟演示视频制作、视觉最终优化</span>
+          <span class="priority-tag p0">P0</span>
+        </li>
+      </ul>
+
+      <div class="role-section-label">协作接口</div>
+      <div class="interface-line">对接 <strong>前端开发</strong>（设计稿）、<strong>项目经理</strong>（演示视频）</div>
+    </div>
+  </div>
+
+  <!-- 角色卡B: 测试文档工程师（新生） -->
+  <div class="role-card role-card-top" style="border-top-color:var(--design);">
+    <div class="role-card-header">
+      <div class="role-badge" style="background:var(--design);">测试文档<br>工程师</div>
+      <div class="role-info">
+        <div class="role-name">测试文档工程师<span class="role-newbie-tag">新生</span></div>
+        <div class="role-owner">负责人：测试文档工程师（新生）</div>
+      </div>
+    </div>
+    <div class="role-card-body">
+      <div class="role-section-label">核心职责</div>
+      <p class="role-duty">功能测试、用户反馈收集、文档撰写、提交材料整理。负责编写测试用例、执行功能与集成测试、组织真实用户测试、撰写效果验证报告，并在最终阶段统筹整理7项提交材料。</p>
+
+      <div class="role-section-label">三阶段任务</div>
+      <ul class="task-list">
+        <li>
+          <span class="task-text"><span class="phase-tag p1">Phase1</span>测试用例编写、基础功能测试</span>
+          <span class="priority-tag p2">P2</span>
+        </li>
+        <li>
+          <span class="task-text"><span class="phase-tag p2">Phase2</span>集成测试、组织用户测试（2+真实用户）、效果验证报告撰写</span>
+          <span class="priority-tag p1">P1</span>
+        </li>
+        <li>
+          <span class="task-text"><span class="phase-tag p3">Phase3</span>回归测试、效果验证报告定稿、7项提交材料整理</span>
+          <span class="priority-tag p0">P0</span>
+        </li>
+      </ul>
+
+      <div class="role-section-label">协作接口</div>
+      <div class="interface-line">对接 <strong>所有组</strong>（测试反馈）、<strong>项目经理</strong>（材料）</div>
+
+      <div class="callout note" style="margin-top:16px;">
+        <div class="callout-title">新生标记</div>
+        此角色适合新生，有明确流程（测试用例&#8594;执行&#8594;报告）和指导。由项目经理负责指导，详见<a href="#newbie" style="color:var(--accent2);text-decoration:underline;">新生培养策略</a>。
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ========== 08 新生培养策略 ========== -->
+<section class="section" id="newbie">
+  <div class="section-eyebrow"><span class="sec-num">08</span> NEWCOMER TRAINING</div>
+  <h2 class="section-title">新生培养策略</h2>
+  <p class="section-desc">团队含3名新生，通过明确交付物、分配指导人、由易到难递进任务的方式，确保新生在项目中有效参与并获得成长。每位新生都有资深成员负责指导。</p>
+
+  <div class="newbie-card">
+    <div class="newbie-num">1</div>
+    <div class="newbie-content">
+      <div class="newbie-role">视觉数据工程师（内容数据组）</div>
+      <div class="newbie-desc">负责数据收集标注工作，交付物明确（蔡志忠漫画图集 + 图文对齐标注）。从公开正版图集收集入手，逐步过渡到图文对齐标注与分镜数据提取，有清晰的交付标准可衡量。</div>
+      <div class="newbie-mentor">指导人：模型微调工程师</div>
+    </div>
+  </div>
+
+  <div class="newbie-card">
+    <div class="newbie-num">2</div>
+    <div class="newbie-content">
+      <div class="newbie-role">测试文档工程师（设计测试组）</div>
+      <div class="newbie-desc">负责测试和文档工作，流程清晰（测试用例编写 &#8594; 执行测试 &#8594; 撰写报告）。Phase1从基础功能测试起步，Phase2参与集成测试与用户测试组织，Phase3统筹提交材料整理，逐步承担更大责任。</div>
+      <div class="newbie-mentor">指导人：项目经理</div>
+    </div>
+  </div>
+
+  <div class="newbie-card">
+    <div class="newbie-num">3</div>
+    <div class="newbie-content">
+      <div class="newbie-role">前端开发助理（开发组）</div>
+      <div class="newbie-desc">协助前端UI实现，有完整设计稿和已有代码参考。从组件级实现（按钮/卡片/表单）入手，逐步参与页面搭建与交互功能开发，在真实项目中积累Vue3开发经验。</div>
+      <div class="newbie-mentor">指导人：前端开发工程师</div>
+    </div>
+  </div>
+
+  <div class="callout note">
+    <div class="callout-title">培养机制</div>
+    <strong>每周1对1指导</strong>：指导人与新生每周进行至少1次1对1沟通，解答疑问、review工作、调整任务。<br>
+    <strong>分配Buddy</strong>：每位新生配备一名Buddy（非指导人），协助日常问题解答与团队融入。<br>
+    <strong>由易到难递进</strong>：任务按难度递进分配，确保新生在每个阶段都有 achievable 的目标与成就感。
+  </div>
+</section>
+
+<!-- ========== 09 原型图说明 ========== -->
+<section class="section" id="wireframes">
+  <div class="section-eyebrow"><span class="sec-num">09</span> PROTOTYPE WIREFRAMES</div>
+  <h2 class="section-title">原型图说明</h2>
+  <p class="section-desc">四大核心页面的线框图设计，展示各板块的布局结构与功能分区。线框图采用CSS绘制，标注关键区域与交互逻辑，为前端开发与UI设计提供参考基准。</p>
+
+  <div class="wireframe-grid">
+
+    <!-- 原型图1: 墨漫工坊 -->
+    <div class="wf-card">
+      <div class="wf-header">
+        <div class="wf-title">墨漫工坊</div>
+        <div class="wf-num">WF-01</div>
+      </div>
+      <div class="wf-body">
+        <div class="wf-label">主操作区 · 三栏布局</div>
+        <div class="wf-row">
+          <div class="wf-box" style="flex:1;">
+            <div class="wf-box-title">古文输入区</div>
+            <div class="wf-box-sub">文本输入 / 粘贴 / 文件上传</div>
+          </div>
+          <div class="wf-box accent" style="flex:1;">
+            <div class="wf-box-title">分镜预览区</div>
+            <div class="wf-box-sub">分镜列表 / 线稿预览 / 编辑</div>
+          </div>
+          <div class="wf-box" style="flex:1;">
+            <div class="wf-box-title">动画播放区</div>
+            <div class="wf-box-sub">水墨动画 / 播放控制</div>
+          </div>
+        </div>
+        <div class="wf-label" style="margin-top:8px;">底部 · 文漫互转切换</div>
+        <div class="wf-row">
+          <div class="wf-box dark" style="flex:1;">
+            <div class="wf-box-title">文&#8594;漫 | 漫&#8594;文 互转切换栏</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 原型图2: 教学工作台 -->
+    <div class="wf-card">
+      <div class="wf-header">
+        <div class="wf-title">教学工作台</div>
+        <div class="wf-num">WF-02</div>
+      </div>
+      <div class="wf-body">
+        <div class="wf-label">上方 · 原文输入</div>
+        <div class="wf-row">
+          <div class="wf-box dark" style="flex:1;">
+            <div class="wf-box-title">原文输入区</div>
+            <div class="wf-box-sub">古文/白话文输入</div>
+          </div>
+        </div>
+        <div class="wf-label" style="margin-top:8px;">三列输出区</div>
+        <div class="wf-row">
+          <div class="wf-box" style="flex:1;">
+            <div class="wf-box-title">剧本输出</div>
+            <div class="wf-box-sub">自动生成剧本</div>
+          </div>
+          <div class="wf-box accent" style="flex:1;">
+            <div class="wf-box-title">分镜稿输出</div>
+            <div class="wf-box-sub">分镜文案 + 画面</div>
+          </div>
+          <div class="wf-box" style="flex:1;">
+            <div class="wf-box-title">动画输出</div>
+            <div class="wf-box-sub">水墨动画预览</div>
+          </div>
+        </div>
+        <div class="wf-label" style="margin-top:8px;">底部 · 课件打包</div>
+        <div class="wf-row">
+          <div class="wf-box dark" style="flex:1;">
+            <div class="wf-box-title">课件一键打包下载按钮</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 原型图3: 数字人文实验室 -->
+    <div class="wf-card">
+      <div class="wf-header">
+        <div class="wf-title">数字人文实验室</div>
+        <div class="wf-num">WF-03</div>
+      </div>
+      <div class="wf-body">
+        <div class="wf-label">三栏布局 · 数据分析</div>
+        <div class="wf-row">
+          <div class="wf-box" style="flex:0.8;">
+            <div class="wf-box-title">数据筛选区</div>
+            <div class="wf-box-sub">朝代/体裁/关键词筛选</div>
+          </div>
+          <div class="wf-box accent" style="flex:1.4;">
+            <div class="wf-box-title">图表可视化区</div>
+            <div class="wf-box-sub">饼图 / 折线图 / 热力图</div>
+          </div>
+          <div class="wf-box" style="flex:0.8;">
+            <div class="wf-box-title">数据导出区</div>
+            <div class="wf-box-sub">CSV / JSON / 报告导出</div>
+          </div>
+        </div>
+        <div class="wf-label" style="margin-top:8px;">底部 · 图表类型切换</div>
+        <div class="wf-row">
+          <div class="wf-box dark" style="flex:1;">
+            <div class="wf-box-title">饼图 | 折线图 | 热力图 | 柱状图 切换栏</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 原型图4: 文影创作坊 -->
+    <div class="wf-card">
+      <div class="wf-header">
+        <div class="wf-title">文影创作坊</div>
+        <div class="wf-num">WF-04</div>
+      </div>
+      <div class="wf-body">
+        <div class="wf-label">三栏布局 · 影视改编</div>
+        <div class="wf-row">
+          <div class="wf-box" style="flex:1;">
+            <div class="wf-box-title">小说输入区</div>
+            <div class="wf-box-sub">白话小说文本输入</div>
+          </div>
+          <div class="wf-box accent" style="flex:1;">
+            <div class="wf-box-title">剧本编辑区</div>
+            <div class="wf-box-sub">分场剧本 / 对白编辑</div>
+          </div>
+          <div class="wf-box" style="flex:1;">
+            <div class="wf-box-title">多风格视频预览</div>
+            <div class="wf-box-sub">风格切换 / 视频播放</div>
+          </div>
+        </div>
+        <div class="wf-label" style="margin-top:8px;">底部 · 风格选择</div>
+        <div class="wf-row">
+          <div class="wf-box dark" style="flex:1;">
+            <div class="wf-box-title">水墨 | 工笔 | 写意 | 极简 风格切换栏</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <div class="callout">
+    <div class="callout-title">原型图说明</div>
+    以上4个线框图展示了墨影智学平台四大核心板块的页面布局与功能分区。每个页面均采用三栏或上下分区布局，确保信息层次清晰、操作流程顺畅。线框图将作为UI设计师输出高保真设计稿、前端开发实现页面的参考基准。
+  </div>
+</section>
+
+<!-- ========== Footer ========== -->
+<footer class="footer">
+  <div class="footer-brand">墨影智学 · Mo Ying Zhi Xue</div>
+  <div>文本-漫画-动画跨媒介教学智能体</div>
+  <div style="margin-top:8px;opacity:.6;">比赛编号 XH-202620 · 发榜单位：科大讯飞 · 提交截止：2026年9月15日</div>
+  <div style="margin-top:4px;opacity:.4;">团队分工文档 · 2026年8月8日</div>
+</footer>
+
+</main>
+</div>
+</body>
+</html>
