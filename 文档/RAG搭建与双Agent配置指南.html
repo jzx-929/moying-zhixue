@@ -1,0 +1,628 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>RAG文本库搭建与双Agent配置指南</title>
+<style>
+  :root {
+    --primary: #1a365d;
+    --accent: #2b6cb0;
+    --bg: #f7fafc;
+    --card: #ffffff;
+    --border: #e2e8f0;
+    --text: #2d3748;
+    --light: #718096;
+    --code-bg: #1e1e2e;
+    --code-text: #cdd6f4;
+    --green: #38a169;
+    --orange: #dd6b20;
+    --red: #e53e3e;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    font-family: -apple-system, "Microsoft YaHei", "PingFang SC", sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    line-height: 1.8;
+  }
+  .header {
+    background: linear-gradient(135deg, var(--primary), var(--accent));
+    color: white;
+    padding: 36px 0 32px;
+    text-align: center;
+  }
+  .header h1 { font-size: 24px; margin-bottom: 6px; }
+  .header p { font-size: 14px; opacity: 0.85; }
+  .container { max-width: 860px; margin: 0 auto; padding: 24px 20px; }
+
+  .phase-banner {
+    background: linear-gradient(90deg, #ebf8ff, #f0fff4);
+    border: 1px solid #bee3f8;
+    border-radius: 10px;
+    padding: 16px 24px;
+    margin-bottom: 24px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+  .phase-banner .icon {
+    font-size: 24px;
+  }
+  .phase-banner .text { font-size: 14px; }
+  .phase-banner .text strong { color: var(--primary); }
+
+  section {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 28px;
+    margin-bottom: 20px;
+  }
+  section h2 {
+    font-size: 20px;
+    color: var(--primary);
+    margin-bottom: 14px;
+    padding-bottom: 8px;
+    border-bottom: 2px solid var(--accent);
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .step-num {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 30px; height: 30px;
+    background: var(--accent);
+    color: white;
+    border-radius: 50%;
+    font-size: 15px;
+    flex-shrink: 0;
+  }
+  section h3 {
+    font-size: 15px;
+    color: var(--accent);
+    margin: 18px 0 8px;
+    padding-left: 12px;
+    border-left: 3px solid var(--accent);
+  }
+  p { margin-bottom: 8px; font-size: 14.5px; }
+  ul, ol { padding-left: 20px; margin-bottom: 8px; }
+  li { font-size: 14.5px; margin: 3px 0; }
+
+  code {
+    background: #edf2f7;
+    color: var(--primary);
+    padding: 2px 7px;
+    border-radius: 4px;
+    font-family: "Cascadia Code", Consolas, monospace;
+    font-size: 13px;
+  }
+  .code-block {
+    background: var(--code-bg);
+    color: var(--code-text);
+    padding: 14px 18px;
+    border-radius: 8px;
+    margin: 10px 0;
+    overflow-x: auto;
+    font-family: "Cascadia Code", Consolas, monospace;
+    font-size: 13px;
+    line-height: 1.6;
+  }
+  .code-block .comment { color: #6c7086; }
+  .code-block .str { color: #a6e3a1; }
+  .code-block .kw { color: #f38ba8; }
+  .code-block .fn { color: #89b4fa; }
+
+  .callout {
+    border-left: 4px solid;
+    padding: 10px 14px;
+    margin: 10px 0;
+    border-radius: 0 6px 6px 0;
+    font-size: 13.5px;
+  }
+  .callout.tip { border-color: var(--green); background: #f0fff4; }
+  .callout.warn { border-color: var(--orange); background: #fffaf0; }
+  .callout.danger { border-color: var(--red); background: #fff5f5; }
+
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 10px 0;
+    font-size: 13.5px;
+  }
+  th {
+    background: var(--primary);
+    color: white;
+    padding: 8px 12px;
+    text-align: left;
+  }
+  td {
+    padding: 8px 12px;
+    border-bottom: 1px solid var(--border);
+  }
+  tr:nth-child(even) td { background: #f7fafc; }
+
+  .tree {
+    background: #f7fafc;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 14px 18px;
+    margin: 10px 0;
+    font-family: "Cascadia Code", Consolas, monospace;
+    font-size: 13px;
+    line-height: 1.7;
+    color: var(--text);
+  }
+
+  .flow {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 4px;
+    margin: 14px 0;
+  }
+  .flow-box {
+    background: var(--accent);
+    color: white;
+    padding: 6px 14px;
+    border-radius: 6px;
+    font-size: 13px;
+    white-space: nowrap;
+  }
+  .flow-box.green { background: var(--green); }
+  .flow-arrow { color: var(--light); font-size: 16px; }
+
+  .assign-tag {
+    display: inline-block;
+    padding: 1px 8px;
+    border-radius: 10px;
+    font-size: 11px;
+    font-weight: 600;
+  }
+  .assign-tag.new { background: #feebc8; color: #7b341e; }
+  .assign-tag.old { background: #bee3f8; color: #2a4365; }
+
+  .footer {
+    text-align: center;
+    padding: 20px;
+    color: var(--light);
+    font-size: 12px;
+  }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <h1>RAG 文本库搭建与双 Agent 配置指南</h1>
+  <p>墨影智学 · Phase 1 技术执行手册</p>
+</div>
+
+<div class="container">
+
+  <div class="phase-banner">
+    <div class="icon">&#128218;</div>
+    <div class="text">
+      <strong>目标：</strong>完成诸子百家文本入库 + 双 Agent 链路跑通 &nbsp;|&nbsp;
+      <strong>预计耗时：</strong>3-4 天 &nbsp;|&nbsp;
+      <strong>负责人：</strong>AI模型组 + 内容数据组
+    </div>
+  </div>
+
+  <!-- Step 1 -->
+  <section>
+    <h2><span class="step-num">1</span>收集与整理诸子百家文本</h2>
+
+    <h3>任务说明</h3>
+    <p>将核心典籍整理为纯文本文件，放入项目目录。只保留古文原文，去掉注释和翻译。</p>
+
+    <h3>需要的典籍</h3>
+    <table>
+      <tr><th>典籍</th><th>范围</th><th>学派标签</th><th>来源建议</th></tr>
+      <tr><td>论语</td><td>全 20 篇</td><td>儒家</td><td>古诗文网 gushiwen.cn</td></tr>
+      <tr><td>孟子</td><td>全 14 篇</td><td>儒家</td><td>中国哲学书电子化计划 ctext.org</td></tr>
+      <tr><td>道德经</td><td>全 81 章</td><td>道家</td><td>同上</td></tr>
+      <tr><td>庄子</td><td>内 7 篇 + 外 15 篇</td><td>道家</td><td>同上</td></tr>
+      <tr><td>史记</td><td>选篇（列传为主）</td><td>史家</td><td>同上</td></tr>
+    </table>
+
+    <h3>目录结构</h3>
+    <div class="tree">
+data/texts/
+├── 论语/
+│   ├── 学而.txt
+│   ├── 为政.txt
+│   └── ...（共20个文件）
+├── 孟子/
+│   ├── 梁惠王上.txt
+│   └── ...
+├── 道德经/
+│   ├── 第一章.txt
+│   └── ...（共81个文件）
+├── 庄子/
+│   ├── 逍遥游.txt
+│   └── ...
+└── 史记/
+    ├── 项羽本纪.txt
+    └── ...
+    </div>
+
+    <div class="callout tip">
+      <strong>分工建议：</strong><span class="assign-tag new">新生</span> 负责从网站复制整理文本，<span class="assign-tag old">老成员</span> 负责检查文本完整性和格式规范。
+    </div>
+  </section>
+
+  <!-- Step 2 -->
+  <section>
+    <h2><span class="step-num">2</span>编写文本清洗与分块脚本</h2>
+
+    <h3>任务说明</h3>
+    <p>把原始 txt 文件清洗（去注释空行）后，按规则分块，为每块打上元数据标签。</p>
+
+    <h3>分块规则</h3>
+    <table>
+      <tr><th>典籍</th><th>分块方式</th><th>块大小</th><th>重叠</th></tr>
+      <tr><td>论语 / 孟子</td><td>按条分（一条一块）</td><td>自然条目</td><td>无</td></tr>
+      <tr><td>道德经</td><td>按章分（一章一块）</td><td>自然章节</td><td>无</td></tr>
+      <tr><td>庄子 / 史记</td><td>按段落分</td><td>200-500 字</td><td>50 字</td></tr>
+    </table>
+
+    <h3>脚本代码</h3>
+    <p>创建文件 <code>scripts/build_rag_text.py</code>：</p>
+    <div class="code-block">
+<span class="kw">import</span> os, re, json, hashlib
+<span class="kw">from</span> pathlib <span class="kw">import</span> Path
+
+<span class="comment"># ===== 1. 配置 =====</span>
+TEXT_DIR = Path(<span class="str">"data/texts"</span>)
+OUTPUT = Path(<span class="str">"data/chunks.json"</span>)
+
+SCHOOL_MAP = {
+    <span class="str">"论语"</span>: <span class="str">"儒家"</span>, <span class="str">"孟子"</span>: <span class="str">"儒家"</span>,
+    <span class="str">"道德经"</span>: <span class="str">"道家"</span>, <span class="str">"庄子"</span>: <span class="str">"道家"</span>,
+    <span class="str">"史记"</span>: <span class="str">"史家"</span>,
+}
+
+<span class="comment"># ===== 2. 清洗函数 =====</span>
+<span class="kw">def</span> <span class="fn">clean_text</span>(text):
+    <span class="str">"""去掉空行、注释标记，只保留古文原文"""</span>
+    lines = [l.strip() <span class="kw">for</span> l <span class="kw">in</span> text.splitlines()]
+    lines = [l <span class="kw">for</span> l <span class="kw">in</span> lines <span class="kw">if</span> l <span class="kw">and not</span> l.startswith(<span class="str">"//"</span>)]
+    <span class="kw">return</span> <span class="str">"\n"</span>.join(lines)
+
+<span class="comment"># ===== 3. 分块函数 =====</span>
+<span class="kw">def</span> <span class="fn">chunk_by_paragraph</span>(text, max_len=400, overlap=50):
+    <span class="str">"""长文本按段落分块，带重叠"""</span>
+    paragraphs = text.split(<span class="str">"\n"</span>)
+    chunks, current = [], <span class="str">""</span>
+    <span class="kw">for</span> p <span class="kw">in</span> paragraphs:
+        <span class="kw">if</span> len(current) + len(p) > max_len <span class="kw">and</span> current:
+            chunks.append(current)
+            current = current[-overlap:] + p  <span class="comment"># 保留尾部重叠</span>
+        <span class="kw">else</span>:
+            current = current + <span class="str">"\n"</span> + p <span class="kw">if</span> current <span class="kw">else</span> p
+    <span class="kw">if</span> current:
+        chunks.append(current)
+    <span class="kw">return</span> chunks
+
+<span class="comment"># ===== 4. 主流程：遍历所有文本，清洗+分块 =====</span>
+all_chunks = []
+
+<span class="kw">for</span> book_dir <span class="kw">in</span> TEXT_DIR.iterdir():
+    <span class="kw">if not</span> book_dir.is_dir():
+        <span class="kw">continue</span>
+    book_name = book_dir.name
+    school = SCHOOL_MAP.get(book_name, <span class="str">"其他"</span>)
+
+    <span class="kw">for</span> txt_file <span class="kw">in</span> book_dir.glob(<span class="str">"*.txt"</span>):
+        chapter = txt_file.stem
+        raw = txt_file.read_text(encoding=<span class="str">"utf-8"</span>)
+        cleaned = clean_text(raw)
+
+        <span class="comment"># 论语/孟子/道德经：整篇作为一个块</span>
+        <span class="kw">if</span> book_name <span class="kw">in</span> (<span class="str">"论语"</span>, <span class="str">"孟子"</span>, <span class="str">"道德经"</span>):
+            pieces = [cleaned]
+        <span class="kw">else</span>:  <span class="comment"># 庄子/史记：按段落分块</span>
+            pieces = chunk_by_paragraph(cleaned)
+
+        <span class="kw">for</span> i, piece <span class="kw">in</span> enumerate(pieces):
+            chunk_id = hashlib.md5(f<span class="str">"{book_name}_{chapter}_{i}"</span>.encode()).hexdigest()[:12]
+            all_chunks.append({
+                <span class="str">"id"</span>: chunk_id,
+                <span class="str">"text"</span>: piece,
+                <span class="str">"metadata"</span>: {
+                    <span class="str">"source"</span>: book_name,
+                    <span class="str">"chapter"</span>: chapter,
+                    <span class="str">"school"</span>: school,
+                    <span class="str">"chunk_index"</span>: i
+                }
+            })
+
+<span class="comment"># ===== 5. 保存 =====</span>
+OUTPUT.write_text(json.dumps(all_chunks, ensure_ascii=False, indent=2), encoding=<span class="str">"utf-8"</span>)
+print(f<span class="str">"分块完成：共 {len(all_chunks)} 个文本块，已保存到 {OUTPUT}"</span>)
+    </div>
+
+    <div class="callout warn">
+      <strong>运行前准备：</strong>确保 <code>data/texts/</code> 目录下已有整理好的 txt 文件。<code>pip install chromadb</code> 也要先装好。
+    </div>
+  </section>
+
+  <!-- Step 3 -->
+  <section>
+    <h2><span class="step-num">3</span>文本入库到 Chroma 向量数据库</h2>
+
+    <h3>任务说明</h3>
+    <p>将上一步生成的分块数据存入 Chroma 向量数据库，实现语义检索能力。</p>
+
+    <h3>入库脚本</h3>
+    <p>创建文件 <code>scripts/ingest_to_chroma.py</code>：</p>
+    <div class="code-block">
+<span class="kw">import</span> chromadb
+<span class="kw">import</span> json
+<span class="kw">from</span> pathlib <span class="kw">import</span> Path
+
+<span class="comment"># ===== 1. 连接 Chroma（本地持久化） =====</span>
+client = chromadb.PersistentClient(path=<span class="str">"data/chroma_db"</span>)
+collection = client.get_or_create_collection(
+    name=<span class="str">"guoxue_texts"</span>,
+    metadata={<span class="str">"description"</span>: <span class="str">"诸子百家国学文本库"</span>}
+)
+
+<span class="comment"># ===== 2. 加载分块数据 =====</span>
+chunks = json.loads(Path(<span class="str">"data/chunks.json"</span>).read_text(encoding=<span class="str">"utf-8"</span>))
+print(f<span class="str">"加载了 {len(chunks)} 个文本块"</span>)
+
+<span class="comment"># ===== 3. 批量入库（每批最多 500 条） =====</span>
+BATCH = 500
+<span class="kw">for</span> i <span class="kw">in</span> range(0, len(chunks), BATCH):
+    batch = chunks[i:i+BATCH]
+    collection.add(
+        ids=[c[<span class="str">"id"</span>] <span class="kw">for</span> c <span class="kw">in</span> batch],
+        documents=[c[<span class="str">"text"</span>] <span class="kw">for</span> c <span class="kw">in</span> batch],
+        metadatas=[c[<span class="str">"metadata"</span>] <span class="kw">for</span> c <span class="kw">in</span> batch]
+    )
+    print(f<span class="str">"已入库 {min(i+BATCH, len(chunks))}/{len(chunks)}"</span>)
+
+print(<span class="str">"入库完成！"</span>)
+
+<span class="comment"># ===== 4. 验证：测试检索 =====</span>
+results = collection.query(
+    query_texts=[<span class="str">"孔子论学习"</span>],
+    n_results=3
+)
+print(<span class="str">"\n=== 检索测试：'孔子论学习' ==="</span>)
+<span class="kw">for</span> doc, meta <span class="kw">in</span> zip(results[<span class="str">"documents"</span>][0], results[<span class="str">"metadatas"</span>][0]):
+    print(f<span class="str">"[{meta['source']}·{meta['chapter']}] {doc[:80]}..."</span>)
+    </div>
+
+    <div class="callout tip">
+      <strong>验证标准：</strong>运行脚本后，检索"孔子论学习"应该能召回《论语》相关段落。如果召回结果不对，检查分块是否正确。
+    </div>
+  </section>
+
+  <!-- Step 4 -->
+  <section>
+    <h2><span class="step-num">4</span>配置双 Agent（星火星辰平台）</h2>
+
+    <h3>任务说明</h3>
+    <p>在星火大模型平台（ai.fifedu.com）上创建两个 Agent，分别负责文本转化和画面风格约束。</p>
+
+    <h3>Agent 1：文改 Agent</h3>
+    <p><strong>职责：</strong>古文解析 → 白话翻译 → 剧本拆分 → 分镜文案</p>
+    <p><strong>操作步骤：</strong></p>
+    <ol>
+      <li>登录 <code>ai.fifedu.com</code>，进入星辰 Agent 开发平台</li>
+      <li>点击「创建 Agent」，名称填 <code>墨影智学-文改Agent</code></li>
+      <li>在「知识库」中挂载上一步建好的 Chroma 文本库</li>
+      <li>在「System Prompt」中粘贴以下配置：</li>
+    </ol>
+    <div class="code-block">
+你是「墨影智学·文改Agent」，专门负责国学典籍的文本转化工作。
+
+【能力】
+1. 古文解析：理解诸子百家原文的含义、典故、修辞手法
+2. 白话翻译：将古文翻译为通俗易懂的现代汉语
+3. 剧本拆分：将叙事文本拆分为剧本格式（场景/角色/对话/旁白）
+4. 分镜文案：将剧本转化为分镜描述（镜头号/画面描述/文字/时长）
+
+【规则】
+- 引用原文时必须标注出处（如《论语·学而》）
+- 翻译要忠于原意，不得编造内容
+- 分镜描述要具体可视化，为画面Agent提供可执行的描述
+- 输出格式统一为 JSON，包含字段：source, translation, script, storyboard
+
+【输出示例】
+{
+  "source": "《论语·学而》",
+  "translation": "孔子说：学习了知识并按时温习，不也是很愉快吗？",
+  "script": {"scene": "学堂", "role": "孔子", "dialogue": "...", "narration": "..."},
+  "storyboard": [{"shot": 1, "visual": "学堂全景", "text": "子曰", "duration": "3s"}]
+}
+    </div>
+
+    <h3>Agent 2：墨影画风 Agent</h3>
+    <p><strong>职责：</strong>接收分镜文案 → 生成水墨画面构图 → 约束线条/留白/风格</p>
+    <p><strong>操作步骤：</strong></p>
+    <ol>
+      <li>同样在星辰平台创建新 Agent，名称填 <code>墨影智学-墨影画风Agent</code></li>
+      <li>挂载视觉知识库（蔡志忠漫画分格图集描述数据）</li>
+      <li>在「System Prompt」中粘贴以下配置：</li>
+    </ol>
+    <div class="code-block">
+你是「墨影智学·墨影画风Agent」，负责水墨动画画面的风格约束和生成指导。
+
+【能力】
+1. 画面构图：根据分镜文案，设计水墨画构图（主体位置/远近虚实/留白比例）
+2. 风格约束：确保所有画面符合蔡志忠水墨漫画范式
+3. 线条描述：为每帧画面生成具体的线条描述（粗细/疏密/方向）
+4. 连帧建议：为连续画面提供过渡建议，保证动画流畅性
+
+【风格规则】
+- 线条：以简练为主，单帧不超过 5 条主要线条
+- 构图：留白面积 ≥ 40%，主体偏置（不居中）
+- 色调：纯水墨，仅用墨色浓淡变化，不加彩色
+- 人物：简约写意，面部不画五官细节（蔡志忠风格）
+
+【输出格式】
+{
+  "frames": [
+    {
+      "shot": 1,
+      "composition": "左侧人物偏置，右侧大面积留白",
+      "lines": [{"type": "人物轮廓", "weight": "中", "count": 3}],
+      "ink_density": "淡墨为主，人物衣褶用浓墨",
+      "whitespace": "55%"
+    }
+  ]
+}
+    </div>
+  </section>
+
+  <!-- Step 5 -->
+  <section>
+    <h2><span class="step-num">5</span>打通双 Agent 链路（FastAPI 编排）</h2>
+
+    <h3>任务说明</h3>
+    <p>用 FastAPI 接口串联两个 Agent，实现"古文输入 → 文改Agent → 画风Agent → 输出"的完整链路。</p>
+
+    <h3>协作流程</h3>
+    <div class="flow">
+      <div class="flow-box">用户输入古文</div>
+      <div class="flow-arrow">→</div>
+      <div class="flow-box">文改Agent<br><small>挂载文本RAG</small></div>
+      <div class="flow-arrow">→</div>
+      <div class="flow-box">白话文+剧本+分镜</div>
+      <div class="flow-arrow">→</div>
+      <div class="flow-box green">墨影画风Agent<br><small>挂载视觉RAG</small></div>
+      <div class="flow-arrow">→</div>
+      <div class="flow-box green">画面构图+线条约束</div>
+    </div>
+
+    <h3>接口代码</h3>
+    <p>创建文件 <code>backend/api/agents.py</code>：</p>
+    <div class="code-block">
+<span class="kw">from</span> fastapi <span class="kw">import</span> APIRouter, HTTPException
+<span class="kw">from</span> pydantic <span class="kw">import</span> BaseModel
+<span class="kw">import</span> httpx
+
+router = APIRouter(prefix=<span class="str">"/api"</span>)
+
+<span class="comment"># 星火 Agent 配置（替换为实际 ID 和密钥）</span>
+SPARK_API = <span class="str">"https://spark-api.example.com/v1/agents/run"</span>
+WENGAI_AGENT_ID = <span class="str">"文改Agent的ID"</span>
+MOYING_AGENT_ID = <span class="str">"墨影画风Agent的ID"</span>
+API_KEY = <span class="str">"你的星火API密钥"</span>
+
+<span class="kw">class</span> <span class="fn">GenerateRequest</span>(BaseModel):
+    text: str          <span class="comment"># 用户输入的古文</span>
+    mode: str = <span class="str">"full"</span>  <span class="comment"># full=完整链路, text=仅文改, visual=仅画风</span>
+
+<span class="kw">async def</span> <span class="fn">call_agent</span>(agent_id: str, user_input: str):
+    <span class="str">"""调用星火 Agent 接口"""</span>
+    <span class="kw">async with</span> httpx.AsyncClient(timeout=60) <span class="kw">as</span> client:
+        resp = <span class="kw">await</span> client.post(
+            SPARK_API,
+            headers={<span class="str">"Authorization"</span>: f<span class="str">"Bearer {API_KEY}"</span>},
+            json={<span class="str">"agent_id"</span>: agent_id, <span class="str">"input"</span>: user_input}
+        )
+        <span class="kw">if</span> resp.status_code != 200:
+            <span class="kw">raise</span> HTTPException(500, <span class="str">"Agent 调用失败"</span>)
+        <span class="kw">return</span> resp.json()
+
+@router.post(<span class="str">"/generate"</span>)
+<span class="kw">async def</span> <span class="fn">generate</span>(req: GenerateRequest):
+    result = {}
+
+    <span class="comment"># Step 1: 调用文改Agent</span>
+    <span class="kw">if</span> req.mode <span class="kw">in</span> (<span class="str">"full"</span>, <span class="str">"text"</span>):
+        wengai = <span class="kw">await</span> call_agent(WENGAI_AGENT_ID, req.text)
+        result[<span class="str">"text_output"</span>] = wengai
+        <span class="kw">if</span> req.mode == <span class="str">"text"</span>:
+            <span class="kw">return</span> result
+
+    <span class="comment"># Step 2: 把文改Agent的分镜输出传给画风Agent</span>
+    storyboard = wengai.get(<span class="str">"storyboard"</span>, <span class="str">""</span>)
+    <span class="kw">if</span> req.mode <span class="kw">in</span> (<span class="str">"full"</span>, <span class="str">"visual"</span>):
+        input_text = storyboard <span class="kw">if</span> req.mode == <span class="str">"full"</span> <span class="kw">else</span> req.text
+        moying = <span class="kw">await</span> call_agent(MOYING_AGENT_ID, input_text)
+        result[<span class="str">"visual_output"</span>] = moying
+
+    <span class="kw">return</span> result
+    </div>
+  </section>
+
+  <!-- Step 6 -->
+  <section>
+    <h2><span class="step-num">6</span>验证与测试</h2>
+
+    <h3>测试用例</h3>
+    <table>
+      <tr><th>输入</th><th>预期输出</th><th>验证点</th></tr>
+      <tr>
+        <td>子曰：学而时习之，不亦说乎</td>
+        <td>白话翻译 + 剧本 + 分镜 + 画面描述</td>
+        <td>RAG是否召回论语相关段落</td>
+      </tr>
+      <tr>
+        <td>道可道，非常道</td>
+        <td>白话翻译 + 剧本 + 分镜 + 画面描述</td>
+        <td>道家文本是否正确分块入库</td>
+      </tr>
+      <tr>
+        <td>北冥有鱼，其名为鲲</td>
+        <td>白话翻译 + 剧本 + 分镜 + 画面描述</td>
+        <td>庄子长文本分块是否合理</td>
+      </tr>
+    </table>
+
+    <h3>启动测试</h3>
+    <div class="code-block">
+<span class="comment"># 安装依赖</span>
+pip install fastapi uvicorn chromadb httpx
+
+<span class="comment"># 运行分块脚本</span>
+python scripts/build_rag_text.py
+
+<span class="comment"># 入库到 Chroma</span>
+python scripts/ingest_to_chroma.py
+
+<span class="comment"># 启动后端服务</span>
+uvicorn backend.api.agents:router --reload --port 8000
+
+<span class="comment"># 测试接口</span>
+curl -X POST http://localhost:8000/api/generate \
+  -H <span class="str">"Content-Type: application/json"</span> \
+  -d '{<span class="str">"text"</span>: <span class="str">"子曰：学而时习之，不亦说乎"</span>, <span class="str">"mode"</span>: <span class="str">"full"</span>}'
+    </div>
+
+    <div class="callout danger">
+      <strong>验收标准：</strong>输入一句古文，能在 30 秒内返回完整的 {翻译 + 剧本 + 分镜 + 画面描述} JSON。如果任一环节超时，检查 Agent 响应速度和网络连接。
+    </div>
+  </section>
+
+  <!-- Summary -->
+  <section>
+    <h2>&#128203; 执行清单</h2>
+    <table>
+      <tr><th>步骤</th><th>任务</th><th>负责组</th><th>预计时间</th></tr>
+      <tr><td>1</td><td>收集整理 5 本典籍 txt 文件</td><td>内容数据组（新生）</td><td>半天</td></tr>
+      <tr><td>2</td><td>编写文本清洗分块脚本</td><td>AI模型组</td><td>半天</td></tr>
+      <tr><td>3</td><td>文本入库 Chroma + 检索验证</td><td>AI模型组</td><td>半天</td></tr>
+      <tr><td>4</td><td>星火平台配置双 Agent</td><td>AI模型组</td><td>1 天</td></tr>
+      <tr><td>5</td><td>FastAPI 编排双 Agent 链路</td><td>开发组-后端</td><td>半天</td></tr>
+      <tr><td>6</td><td>端到端测试与验收</td><td>全员</td><td>半天</td></tr>
+    </table>
+    <div class="callout tip">
+      <strong>优先级：</strong>先完成步骤 1-3（RAG 能检索），再做步骤 4-5（Agent 链路）。不要同时开两条线。
+    </div>
+  </section>
+
+  <div class="footer">
+    <p>墨影智学 · RAG文本库搭建与双Agent配置指南 · 2026年8月</p>
+  </div>
+
+</div>
+</body>
+</html>

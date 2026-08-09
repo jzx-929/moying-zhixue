@@ -63,6 +63,9 @@ ai/models/weights/
 ai/lora/weights/
 
 # ===== 数据文件（大文件不入库）=====
+数据/raw/
+数据/processed/*.csv
+数据/processed/*.json
 data/raw/
 data/processed/*.csv
 data/processed/*.json
@@ -78,6 +81,7 @@ tmp/
 temp/
 *.tmp
 .cache/
+.trae-html-share-packages/
 
 # ===== 数据库 =====
 *.db

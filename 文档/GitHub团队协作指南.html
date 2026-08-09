@@ -1,0 +1,524 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>墨影智学 — GitHub 团队协作指南</title>
+<style>
+  :root {
+    --primary: #1a365d;
+    --accent: #2b6cb0;
+    --bg: #f7fafc;
+    --card: #ffffff;
+    --border: #e2e8f0;
+    --text: #2d3748;
+    --light: #718096;
+    --code-bg: #1e1e2e;
+    --code-text: #cdd6f4;
+    --green: #38a169;
+    --orange: #dd6b20;
+    --red: #e53e3e;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    font-family: -apple-system, "Microsoft YaHei", "PingFang SC", sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    line-height: 1.8;
+  }
+  .header {
+    background: linear-gradient(135deg, var(--primary), var(--accent));
+    color: white;
+    padding: 48px 0 40px;
+    text-align: center;
+  }
+  .header h1 { font-size: 28px; margin-bottom: 8px; }
+  .header p { font-size: 15px; opacity: 0.85; }
+  .header .repo-link {
+    display: inline-block;
+    margin-top: 16px;
+    padding: 8px 24px;
+    background: rgba(255,255,255,0.15);
+    border: 1px solid rgba(255,255,255,0.3);
+    border-radius: 8px;
+    color: white;
+    text-decoration: none;
+    font-size: 14px;
+    font-family: "Cascadia Code", Consolas, monospace;
+  }
+  .container { max-width: 900px; margin: 0 auto; padding: 32px 24px; }
+
+  .toc {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 24px 32px;
+    margin-bottom: 32px;
+  }
+  .toc h2 { font-size: 16px; color: var(--primary); margin-bottom: 12px; }
+  .toc ol { padding-left: 20px; }
+  .toc li { margin: 4px 0; }
+  .toc a { color: var(--accent); text-decoration: none; font-size: 14px; }
+  .toc a:hover { text-decoration: underline; }
+
+  section {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 32px;
+    margin-bottom: 24px;
+  }
+  section h2 {
+    font-size: 22px;
+    color: var(--primary);
+    margin-bottom: 16px;
+    padding-bottom: 8px;
+    border-bottom: 2px solid var(--accent);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  section h2 .num {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 32px; height: 32px;
+    background: var(--accent);
+    color: white;
+    border-radius: 50%;
+    font-size: 16px;
+  }
+  section h3 {
+    font-size: 16px;
+    color: var(--accent);
+    margin: 20px 0 10px;
+  }
+  p { margin-bottom: 10px; font-size: 14.5px; }
+  ul, ol { padding-left: 20px; margin-bottom: 10px; }
+  li { font-size: 14.5px; margin: 4px 0; }
+
+  code {
+    background: var(--code-bg);
+    color: var(--code-text);
+    padding: 2px 8px;
+    border-radius: 4px;
+    font-family: "Cascadia Code", Consolas, monospace;
+    font-size: 13px;
+  }
+  .code-block {
+    background: var(--code-bg);
+    color: var(--code-text);
+    padding: 16px 20px;
+    border-radius: 8px;
+    margin: 12px 0;
+    overflow-x: auto;
+    font-family: "Cascadia Code", Consolas, monospace;
+    font-size: 13px;
+    line-height: 1.6;
+  }
+  .code-block .comment { color: #6c7086; }
+  .code-block .cmd { color: #89b4fa; }
+  .code-block .flag { color: #f9e2af; }
+  .code-block .str { color: #a6e3a1; }
+  .code-block .prompt { color: #f38ba8; }
+
+  .callout {
+    border-left: 4px solid;
+    padding: 12px 16px;
+    margin: 12px 0;
+    border-radius: 0 8px 8px 0;
+    font-size: 14px;
+  }
+  .callout.tip { border-color: var(--green); background: #f0fff4; }
+  .callout.warn { border-color: var(--orange); background: #fffaf0; }
+  .callout.danger { border-color: var(--red); background: #fff5f5; }
+
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 12px 0;
+    font-size: 14px;
+  }
+  th {
+    background: var(--primary);
+    color: white;
+    padding: 10px 14px;
+    text-align: left;
+    font-weight: 600;
+  }
+  td {
+    padding: 10px 14px;
+    border-bottom: 1px solid var(--border);
+  }
+  tr:nth-child(even) td { background: #f7fafc; }
+  td code { font-size: 12px; }
+
+  .flow-diagram {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 4px;
+    margin: 20px 0;
+  }
+  .flow-step {
+    background: var(--accent);
+    color: white;
+    padding: 8px 16px;
+    border-radius: 8px;
+    font-size: 13px;
+    font-weight: 600;
+    white-space: nowrap;
+  }
+  .flow-step.main { background: var(--green); }
+  .flow-arrow { color: var(--light); font-size: 18px; }
+
+  .badge {
+    display: inline-block;
+    padding: 2px 10px;
+    border-radius: 12px;
+    font-size: 12px;
+    font-weight: 600;
+    margin-right: 4px;
+  }
+  .badge-green { background: #c6f6d5; color: #22543d; }
+  .badge-blue { background: #bee3f8; color: #2a4365; }
+  .badge-orange { background: #feebc8; color: #7b341e; }
+  .badge-red { background: #fed7d7; color: #742a2a; }
+
+  .footer {
+    text-align: center;
+    padding: 24px;
+    color: var(--light);
+    font-size: 13px;
+  }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <h1>墨影智学 — GitHub 团队协作指南</h1>
+  <p>面向全体团队成员（含3名新生）的 Git & GitHub 使用手册</p>
+  <a class="repo-link" href="https://github.com/jzx-929/moying-zhixue" target="_blank">github.com/jzx-929/moying-zhixue</a>
+</div>
+
+<div class="container">
+
+  <div class="toc">
+    <h2>目录</h2>
+    <ol>
+      <li><a href="#s1">GitHub 是什么？为什么用它？</a></li>
+      <li><a href="#s2">环境准备（第一次使用）</a></li>
+      <li><a href="#s3">获取仓库代码</a></li>
+      <li><a href="#s4">日常开发工作流（核心！）</a></li>
+      <li><a href="#s5">分支管理策略</a></li>
+      <li><a href="#s6">Pull Request 协作流程</a></li>
+      <li><a href="#s7">命令速查表</a></li>
+      <li><a href="#s8">常见问题与排错</a></li>
+      <li><a href="#s9">团队协作规范</a></li>
+    </ol>
+  </div>
+
+  <!-- Section 1 -->
+  <section id="s1">
+    <h2><span class="num">1</span>GitHub 是什么？为什么用它？</h2>
+    <p><strong>一句话说明</strong>：GitHub 是一个代码托管平台，就像"代码版的百度网盘 + 团队协作工具"。</p>
+
+    <h3>对我们项目的价值</h3>
+    <ul>
+      <li><span class="badge badge-green">代码同步</span> 每个人写的代码都在一个地方，不用到处发压缩包</li>
+      <li><span class="badge badge-blue">版本记录</span> 每次修改都有记录，随时可以回退到之前的状态</li>
+      <li><span class="badge badge-orange">协作开发</span> 多人同时开发不同功能，最后合并到一起</li>
+      <li><span class="badge badge-red">代码审查</span> 提交代码前需要别人检查，减少 Bug</li>
+    </ul>
+
+    <div class="callout tip">
+      <strong>新生提示：</strong>不用怕，日常开发只需要记住 5 个命令（后面会讲）。把它当成"保存 + 同步"的工具就行。
+    </div>
+  </section>
+
+  <!-- Section 2 -->
+  <section id="s2">
+    <h2><span class="num">2</span>环境准备（第一次使用）</h2>
+
+    <h3>步骤 1：安装 Git</h3>
+    <p>下载地址：<a href="https://git-scm.com/downloads" target="_blank" style="color:var(--accent)">https://git-scm.com/downloads</a></p>
+    <p>选择 Windows 版本，一路"下一步"安装即可。安装完成后，桌面右键应该能看到 <code>Open Git Bash Here</code> 选项。</p>
+
+    <h3>步骤 2：注册 GitHub 账号</h3>
+    <p>访问 <a href="https://github.com/signup" target="_blank" style="color:var(--accent)">https://github.com/signup</a> 注册账号，注册完成后把<strong>用户名</strong>发给组长，邀请你加入仓库。</p>
+
+    <h3>步骤 3：配置身份信息</h3>
+    <p>打开 <strong>Git Bash</strong>（或 PowerShell），运行以下命令（只需一次）：</p>
+    <div class="code-block">
+<span class="prompt">git</span> config <span class="flag">--global</span> user.name <span class="str">"你的名字"</span>
+<span class="prompt">git</span> config <span class="flag">--global</span> user.email <span class="str">"你的邮箱@xx.com"</span></div>
+    <div class="callout warn">
+      <strong>注意：</strong>邮箱要和 GitHub 注册邮箱一致，这样你的提交才能正确关联到 GitHub 头像。
+    </div>
+
+    <h3>步骤 4：接受仓库邀请</h3>
+    <p>组长邀请后，你会收到一封邮件，点击邮件中的链接接受邀请。也可以直接访问仓库页面：<code>https://github.com/jzx-929/moying-zhixue</code></p>
+  </section>
+
+  <!-- Section 3 -->
+  <section id="s3">
+    <h2><span class="num">3</span>获取仓库代码</h2>
+    <p>接受邀请后，把项目代码下载到本地（只需第一次执行）：</p>
+    <div class="code-block">
+<span class="comment"># 进入你想存放项目的文件夹</span>
+<span class="prompt">cd</span> D:/桌面/竞赛
+
+<span class="comment"># 克隆仓库（复制一份到本地）</span>
+<span class="prompt">git</span> clone https://github.com/jzx-929/moying-zhixue.git
+
+<span class="comment"># 进入项目目录</span>
+<span class="prompt">cd</span> moying-zhixue</div>
+    <p>克隆完成后，你的本地就有了完整的项目文件，和 GitHub 上的一模一样。</p>
+  </section>
+
+  <!-- Section 4 -->
+  <section id="s4">
+    <h2><span class="num">4</span>日常开发工作流（核心！）</h2>
+    <p>每次写代码，遵循这个循环：</p>
+
+    <div class="flow-diagram">
+      <div class="flow-step">① 拉取最新代码</div>
+      <div class="flow-arrow">→</div>
+      <div class="flow-step">② 创建功能分支</div>
+      <div class="flow-arrow">→</div>
+      <div class="flow-step">③ 写代码</div>
+      <div class="flow-arrow">→</div>
+      <div class="flow-step">④ 提交</div>
+      <div class="flow-arrow">→</div>
+      <div class="flow-step">⑤ 推送</div>
+      <div class="flow-arrow">→</div>
+      <div class="flow-step main">⑥ 发起 PR</div>
+    </div>
+
+    <h3>对应的命令</h3>
+    <div class="code-block">
+<span class="comment"># ① 拉取最新代码（每次开始工作前先执行）</span>
+<span class="prompt">git</span> checkout main
+<span class="prompt">git</span> pull origin main
+
+<span class="comment"># ② 创建你自己的功能分支（名字要有意义）</span>
+<span class="prompt">git</span> checkout <span class="flag">-b</span> feature/前端-文影创作坊
+
+<span class="comment"># ③ 写代码...（用你的编辑器/IDE 正常写）</span>
+
+<span class="comment"># ④ 把修改的文件加入暂存区并提交</span>
+<span class="prompt">git</span> add .
+<span class="prompt">git</span> commit <span class="flag">-m</span> <span class="str">"feat: 完成文影创作坊页面布局"</span>
+
+<span class="comment"># ⑤ 推送到 GitHub</span>
+<span class="prompt">git</span> push origin feature/前端-文影创作坊
+
+<span class="comment"># ⑥ 在 GitHub 网页上发起 Pull Request（后面详细讲）</span></div>
+
+    <div class="callout tip">
+      <strong>5 个核心命令记忆口诀：</strong><code>pull</code> → <code>checkout -b</code> → <code>add</code> → <code>commit</code> → <code>push</code>
+    </div>
+  </section>
+
+  <!-- Section 5 -->
+  <section id="s5">
+    <h2><span class="num">5</span>分支管理策略</h2>
+    <p>我们采用简化的 Git Flow 模型，分支分三类：</p>
+
+    <table>
+      <tr>
+        <th>分支类型</th>
+        <th>命名格式</th>
+        <th>用途</th>
+        <th>谁可以操作</th>
+      </tr>
+      <tr>
+        <td><span class="badge badge-green">main</span></td>
+        <td><code>main</code></td>
+        <td>稳定版本，随时可演示</td>
+        <td>只通过 PR 合并，不直接提交</td>
+      </tr>
+      <tr>
+        <td><span class="badge badge-blue">功能分支</span></td>
+        <td><code>feature/描述</code></td>
+        <td>开发新功能</td>
+        <td>每个人自己创建</td>
+      </tr>
+      <tr>
+        <td><span class="badge badge-red">修复分支</span></td>
+        <td><code>fix/描述</code></td>
+        <td>修复 Bug</td>
+        <td>每个人自己创建</td>
+      </tr>
+    </table>
+
+    <h3>命名示例</h3>
+    <div class="code-block">
+<span class="comment"># ✅ 好的命名</span>
+feature/前端-文影创作坊
+feature/AI-文改Agent
+feature/后端-FastAPI框架搭建
+fix/登录页面样式错乱
+
+<span class="comment"># ❌ 不好的命名</span>
+feature/test
+my-branch
+update</div>
+
+    <div class="callout danger">
+      <strong>红线：</strong>绝对不要直接往 <code>main</code> 分支提交代码！所有修改必须通过 Pull Request 合并。
+    </div>
+  </section>
+
+  <!-- Section 6 -->
+  <section id="s6">
+    <h2><span class="num">6</span>Pull Request 协作流程</h2>
+    <p>当你完成一个功能并推送到 GitHub 后，需要发起 Pull Request（简称 PR）让别人检查代码后合并：</p>
+
+    <h3>操作步骤</h3>
+    <ol>
+      <li>推送代码后，打开仓库页面 <code>https://github.com/jzx-929/moying-zhixue</code></li>
+      <li>页面顶部会出现黄色横条提示 <code>Compare &amp; pull request</code>，点击它</li>
+      <li>填写 PR 标题和描述：
+        <ul>
+          <li><strong>标题</strong>：简明说明做了什么，如 <code>feat: 完成文影创作坊页面布局</code></li>
+          <li><strong>描述</strong>：列出改了哪些文件、实现了什么功能</li>
+        </ul>
+      </li>
+      <li>点击 <code>Create pull request</code></li>
+      <li>通知对应的组员或组长进行 Code Review（代码审查）</li>
+      <li>审查通过后，点击 <code>Merge pull request</code> 合并到 <code>main</code></li>
+    </ol>
+
+    <h3>Commit 消息规范</h3>
+    <table>
+      <tr><th>前缀</th><th>含义</th><th>示例</th></tr>
+      <tr><td><code>feat</code></td><td>新功能</td><td><code>feat: 完成水墨动画生成接口</code></td></tr>
+      <tr><td><code>fix</code></td><td>修复Bug</td><td><code>fix: 修复OCR中文识别乱码</code></td></tr>
+      <tr><td><code>docs</code></td><td>文档更新</td><td><code>docs: 更新API接口文档</code></td></tr>
+      <tr><td><code>style</code></td><td>样式调整</td><td><code>style: 调整首页配色方案</code></td></tr>
+      <tr><td><code>refactor</code></td><td>重构代码</td><td><code>refactor: 重构Agent调用逻辑</code></td></tr>
+    </table>
+  </section>
+
+  <!-- Section 7 -->
+  <section id="s7">
+    <h2><span class="num">7</span>命令速查表</h2>
+
+    <h3>最常用（每天都要用）</h3>
+    <div class="code-block">
+<span class="prompt">git</span> pull origin main              <span class="comment"># 拉取最新代码</span>
+<span class="prompt">git</span> checkout <span class="flag">-b</span> feature/xxx    <span class="comment"># 创建并切换到新分支</span>
+<span class="prompt">git</span> add .                         <span class="comment"># 添加所有修改文件到暂存区</span>
+<span class="prompt">git</span> commit <span class="flag">-m</span> <span class="str">"描述"</span>          <span class="comment"># 提交到本地仓库</span>
+<span class="prompt">git</span> push origin feature/xxx       <span class="comment"># 推送到远程仓库</span></div>
+
+    <h3>查看状态</h3>
+    <div class="code-block">
+<span class="prompt">git</span> status                         <span class="comment"># 查看哪些文件被修改了</span>
+<span class="prompt">git</span> log <span class="flag">--oneline</span> <span class="flag">-5</span>            <span class="comment"># 查看最近5条提交记录</span>
+<span class="prompt">git</span> branch                         <span class="comment"># 查看当前在哪个分支</span>
+<span class="prompt">git</span> diff                           <span class="comment"># 查看具体改了什么内容</span></div>
+
+    <h3>分支操作</h3>
+    <div class="code-block">
+<span class="prompt">git</span> checkout main                  <span class="comment"># 切换回 main 分支</span>
+<span class="prompt">git</span> branch <span class="flag">-a</span>                     <span class="comment"># 查看所有分支（含远程）</span>
+<span class="prompt">git</span> branch <span class="flag">-d</span> feature/xxx         <span class="comment"># 删除已合并的本地分支</span></div>
+
+    <h3>撤销操作</h3>
+    <div class="code-block">
+<span class="prompt">git</span> checkout <span class="flag">--</span> 文件名            <span class="comment"># 撤销某个文件的修改（还没add）</span>
+<span class="prompt">git</span> reset HEAD 文件名               <span class="comment"># 撤销 add（还没commit）</span>
+<span class="prompt">git</span> reset <span class="flag">--soft</span> HEAD~1           <span class="comment"># 撤销最近一次 commit（代码保留）</span></div>
+  </section>
+
+  <!-- Section 8 -->
+  <section id="s8">
+    <h2><span class="num">8</span>常见问题与排错</h2>
+
+    <h3>Q1：push 时提示密码错误？</h3>
+    <p>GitHub 已不支持密码登录，需要使用 Personal Access Token（PAT）：</p>
+    <ol>
+      <li>访问 <code>GitHub → Settings → Developer settings → Personal access tokens → Tokens (classic)</code></li>
+      <li>点击 <code>Generate new token</code>，勾选 <code>repo</code> 权限</li>
+      <li>生成后复制 token，push 时密码处粘贴这个 token</li>
+    </ol>
+
+    <h3>Q2：pull 时提示冲突怎么办？</h3>
+    <div class="code-block">
+<span class="comment"># 1. 先看哪些文件冲突</span>
+<span class="prompt">git</span> status
+
+<span class="comment"># 2. 打开冲突文件，找到 &lt;&lt;&lt;&lt;&lt;&lt;&lt; 标记的地方</span>
+<span class="comment">#    手动选择保留哪段代码，删掉标记符号</span>
+
+<span class="comment"># 3. 解决后重新提交</span>
+<span class="prompt">git</span> add .
+<span class="prompt">git</span> commit <span class="flag">-m</span> <span class="str">"resolve: 解决xxx冲突"</span>
+<span class="prompt">git</span> push origin 你的分支名</div>
+
+    <h3>Q3：不小心提交了大文件怎么办？</h3>
+    <p>联系组长处理，不要反复尝试 push。大文件（模型权重、视频等）不要提交到 Git，它们已在 <code>.gitignore</code> 中被忽略。</p>
+
+    <h3>Q4：想撤销已经 push 的提交？</h3>
+    <div class="code-block">
+<span class="prompt">git</span> revert HEAD                     <span class="comment"># 创建一个反向提交来撤销</span>
+<span class="prompt">git</span> push origin 你的分支名</div>
+    <div class="callout danger">
+      <strong>警告：</strong>不要用 <code>git push --force</code>，除非你非常确定自己在做什么！
+    </div>
+  </section>
+
+  <!-- Section 9 -->
+  <section id="s9">
+    <h2><span class="num">9</span>团队协作规范</h2>
+
+    <h3>每日必做</h3>
+    <ul>
+      <li>开始工作前：<code>git pull origin main</code> 拉取最新代码</li>
+      <li>结束工作时：确保代码已 push 到自己的分支</li>
+      <li>功能完成后：及时发起 PR，不要攒一大堆代码才提交</li>
+    </ul>
+
+    <h3>提交规范</h3>
+    <ul>
+      <li>每次 commit 只做一件事，不要一个 commit 混合多个功能</li>
+      <li>commit 消息要写清楚做了什么，用中文或英文均可</li>
+      <li>不要提交临时文件、调试日志、IDE 配置（已被 .gitignore 忽略）</li>
+      <li>不要提交大文件（&gt; 10MB），模型权重等放 MinIO 或网盘</li>
+    </ul>
+
+    <h3>PR 规范</h3>
+    <ul>
+      <li>PR 标题用 <code>类型: 描述</code> 格式</li>
+      <li>描述中说明：改了什么、为什么改、怎么测试</li>
+      <li>至少 1 人 Review 通过后才能合并</li>
+      <li>PR 合并后，删除已合并的功能分支，保持仓库整洁</li>
+    </ul>
+
+    <h3>各组对接重点</h3>
+    <table>
+      <tr><th>组别</th><th>关注目录</th><th>注意事项</th></tr>
+      <tr><td>管理组</td><td><code>/</code> 全局</td><td>负责 PR 审查、分支管理、版本发布</td></tr>
+      <tr><td>AI模型组</td><td><code>ai/</code></td><td>模型权重不入库，只提交代码和配置</td></tr>
+      <tr><td>开发组-前端</td><td><code>frontend/</code></td><td>提交前确认 <code>npm run build</code> 通过</td></tr>
+      <tr><td>开发组-后端</td><td><code>backend/</code></td><td>提交前确认接口能正常启动</td></tr>
+      <tr><td>内容数据组</td><td><code>data/</code></td><td>数据文件用脚本处理，不手动提交大文件</td></tr>
+      <tr><td>设计测试组</td><td><code>frontend/</code> 样式部分</td><td>设计稿放设计工具，代码仓库只放实现代码</td></tr>
+    </table>
+
+    <div class="callout tip">
+      <strong>记住一句话：</strong>先 pull，再开发，小步提交，及时推送，发 PR 等审查。
+    </div>
+  </section>
+
+  <div class="footer">
+    <p>墨影智学项目组 · 2026年8月</p>
+    <p>如有疑问，在微信群 @组长 或在 GitHub Issues 中提问</p>
+  </div>
+
+</div>
+</body>
+</html>
