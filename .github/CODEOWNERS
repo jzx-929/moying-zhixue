@@ -1,0 +1,29 @@
+# CODEOWNERS 文件
+# GitHub 会根据此文件自动请求对应模块的负责人进行 Code Review
+# 格式: <目录或文件路径> <@用户名 或 @团队名>
+
+# 根目录配置文件
+/                          @jzx-929
+
+# 前端模块
+/frontend/                 @jzx-929
+
+# 后端模块
+/backend/                  @jzx-929
+
+# AI 模块
+/ai/                       @jzx-929
+
+# LoRA 训练相关
+/lora-training-guide/      @jzx-929
+
+# 脚本
+/scripts/                  @jzx-929
+
+# 文档
+/文档/                     @jzx-929
+
+# CI/CD 和 Git 配置
+/.github/                  @jzx-929
+/package.json              @jzx-929
+/commitlint.config.js      @jzx-929
