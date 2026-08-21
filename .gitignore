@@ -87,3 +87,7 @@ temp/
 *.db
 *.sqlite3
 postgresql_data/
+
+# ===== 向量数据库（构建产物，不入库；运行 build_rag.py 本地生成）=====
+data/chroma_db/
+*.pickle
