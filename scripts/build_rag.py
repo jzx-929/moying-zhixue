@@ -1,16 +1,22 @@
-# 不确保完全正确
-
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 """
 墨影智学 — RAG 文本库构建脚本
 功能：繁简转换 → 文本清洗 → 分块 → 入库 Chroma → 检索验证
-运行：python scripts/build_rag.py
+
+依赖安装：
+    pip install chromadb opencc-python-reimplemented sentence-transformers
+
+运行：
+    python scripts/build_rag.py
+
+说明：
+    - 向量模型使用 BAAI/bge-small-zh-v1.5（中文语义检索），首跑自动下载约 95MB；
+    - 繁简转换为强制步骤（语料含繁简混用），未安装 opencc 将直接报错；
+    - 集合使用 cosine 距离，相似度 = 1 - 距离。
 """
 
-import os
 import re
-import json
 import hashlib
 from pathlib import Path
 
@@ -21,6 +27,9 @@ PROJECT_ROOT = Path(__file__).resolve().parent.parent
 TEXT_DIR = PROJECT_ROOT / "data" / "texts"
 CHROMA_DIR = PROJECT_ROOT / "data" / "chroma_db"
 COLLECTION_NAME = "guoxue_texts"
+
+# 向量模型（中文语义检索）；可改用 "shibing624/text2vec-base-chinese" 等中文模型
+EMBEDDING_MODEL = "BAAI/bge-small-zh-v1.5"
 
 # 学派映射
 SCHOOL_MAP = {
@@ -42,22 +51,44 @@ OVERLAP_LEN = 50
 # 繁简转换
 # ============================================================
 def make_converter():
-    """创建繁体→简体转换器"""
+    """创建繁体→简体转换器（强制：语料含繁简混用，必须统一为简体）"""
     try:
         from opencc import OpenCC
-        cc = OpenCC("t2s")  # t2s = Traditional to Simplified
-        print("[OK] OpenCC 繁简转换器已加载")
-        return cc.convert
     except ImportError:
-        print("[WARN] 未安装 opencc，跳过繁简转换")
-        print("       建议运行: pip install opencc-python-reimplemented")
-        return lambda x: x  # 不转换，原样返回
+        print("[FAIL] 未安装 opencc，繁简转换为强制步骤（语料含繁体），不可跳过")
+        print("       请运行: pip install opencc-python-reimplemented")
+        raise
+    cc = OpenCC("t2s")  # t2s = Traditional to Simplified
+    print("[OK] OpenCC 繁简转换器已加载")
+    return cc.convert
+
+# ============================================================
+# 向量模型
+# ============================================================
+def get_embedding_function():
+    """获取中文向量模型（语义检索用），首跑自动下载（约 95MB）"""
+    try:
+        from chromadb.utils.embedding_functions import SentenceTransformerEmbeddingFunction
+    except ImportError:
+        print("[FAIL] 未安装 chromadb，请运行: pip install chromadb")
+        raise
+    try:
+        ef = SentenceTransformerEmbeddingFunction(model_name=EMBEDDING_MODEL)
+        print(f"[OK] 中文向量模型已加载: {EMBEDDING_MODEL}")
+        return ef
+    except Exception as e:
+        print(f"[FAIL] 加载向量模型 {EMBEDDING_MODEL} 失败: {e}")
+        print("       需安装 sentence-transformers: pip install sentence-transformers")
+        raise
 
 # ============================================================
 # 文本清洗
 # ============================================================
 def clean_text(text):
-    """清洗：去空行、去首尾空格、去全角空格缩进"""
+    """清洗：半角标点转全角 → 去空行 → 去首尾空格 → 去全角空格缩进"""
+    # 部分章节混用了半角逗号/分号等，统一为全角，保证分句正则正确生效
+    punct_map = str.maketrans({",": "，", ";": "；", ":": "：", "!": "！", "?": "？"})
+    text = text.translate(punct_map)
     lines = []
     for line in text.splitlines():
         line = line.strip()
@@ -207,7 +238,7 @@ def process_all_texts(convert_func):
 # 存入 Chroma 向量数据库
 # ============================================================
 def ingest_to_chroma(all_chunks):
-    """将所有文本块存入 Chroma"""
+    """将所有文本块存入 Chroma（使用中文向量模型 + cosine 距离）"""
 
     try:
         import chromadb
@@ -215,10 +246,12 @@ def ingest_to_chroma(all_chunks):
         print("[FAIL] 未安装 chromadb，请运行: pip install chromadb")
         return False
 
+    ef = get_embedding_function()
+
     # 本地持久化
     client = chromadb.PersistentClient(path=str(CHROMA_DIR))
 
-    # 已存在则删除重建（避免重复）
+    # 已存在则删除重建（避免重复 / 切换向量模型后必须重建）
     try:
         client.delete_collection(COLLECTION_NAME)
         print(f"已清空旧的集合: {COLLECTION_NAME}")
@@ -227,9 +260,10 @@ def ingest_to_chroma(all_chunks):
 
     collection = client.get_or_create_collection(
         name=COLLECTION_NAME,
-        metadata={"description": "诸子百家国学文本库"}
+        embedding_function=ef,
+        metadata={"hnsw:space": "cosine", "description": "诸子百家国学文本库"},
     )
-    print(f"[OK] Chroma 集合已创建: {COLLECTION_NAME}")
+    print(f"[OK] Chroma 集合已创建: {COLLECTION_NAME} (cosine, {EMBEDDING_MODEL})")
 
     # 批量入库
     BATCH_SIZE = 100
@@ -281,7 +315,7 @@ def verify_retrieval(collection):
             source = meta.get("source", "?")
             chapter = meta.get("chapter", "?")
             preview = doc[:80].replace("\n", " ")
-            score = 1 - dist  # 距离转相似度
+            score = 1 - dist  # cosine 距离 → 相似度
             print(f"  [{j+1}] 《{source}·{chapter}》 相似度:{score:.2f}")
             print(f"      {preview}...")
 
@@ -331,11 +365,14 @@ def main():
     print("\n[5/5] 全部完成!")
     print(f"  - 向量数据库: {CHROMA_DIR}")
     print(f"  - 集合名: {COLLECTION_NAME}")
+    print(f"  - 向量模型: {EMBEDDING_MODEL}")
     print(f"  - 总记录: {len(all_chunks)}")
-    print(f"\n后续使用:")
+    print(f"\n后续使用（重新打开时需重新指定向量模型）:")
     print(f"  import chromadb")
-    print(f"  client = chromadb.PersistentClient(path=str(CHROMA_DIR))")
-    print(f"  collection = client.get_collection('{COLLECTION_NAME}')")
+    print(f"  from chromadb.utils.embedding_functions import SentenceTransformerEmbeddingFunction")
+    print(f"  ef = SentenceTransformerEmbeddingFunction(model_name='{EMBEDDING_MODEL}')")
+    print(f"  client = chromadb.PersistentClient(path='{CHROMA_DIR}')")
+    print(f"  collection = client.get_collection('{COLLECTION_NAME}', embedding_function=ef)")
     print(f"  results = collection.query(query_texts=['你的问题'], n_results=3)")
 
 if __name__ == "__main__":

@@ -357,7 +357,7 @@ print(f<span class="str">"分块完成：共 {len(all_chunks)} 个文本块，�
     <p>将上一步生成的分块数据存入 Chroma 向量数据库，实现语义检索能力。</p>
 
     <h3>入库脚本</h3>
-    <p>创建文件 <code>scripts/ingest_to_chroma.py</code>：</p>
+    <p>创建文件 <code>scripts/build_rag.py</code>：</p>
     <div class="code-block">
 <span class="kw">import</span> chromadb
 <span class="kw">import</span> json
@@ -586,7 +586,7 @@ pip install fastapi uvicorn chromadb httpx
 python scripts/build_rag_text.py
 
 <span class="comment"># 入库到 Chroma</span>
-python scripts/ingest_to_chroma.py
+python scripts/build_rag.py
 
 <span class="comment"># 启动后端服务</span>
 uvicorn backend.api.agents:router --reload --port 8000
