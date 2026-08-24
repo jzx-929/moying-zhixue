@@ -16,11 +16,9 @@
         class="bg-paper2 border border-border rounded-lg px-3 py-1.5 text-sm text-ink focus:outline-none focus:border-accent"
       >
         <option :value="null">全部</option>
-        <option value="论语">论语</option>
-        <option value="庄子">庄子</option>
-        <option value="孟子">孟子</option>
-        <option value="道德经">道德经</option>
-        <option value="史记">史记</option>
+        <option value="儒家">儒家</option>
+        <option value="道家">道家</option>
+        <option value="史家">史家</option>
       </select>
     </div>
 
