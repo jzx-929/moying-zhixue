@@ -1,0 +1,41 @@
+import logging
+
+from fastapi import FastAPI
+from fastapi.middleware.cors import CORSMiddleware
+
+from app.api import health, rag, agent
+from app.core.exceptions import AppException, app_exception_handler, generic_exception_handler
+
+logging.basicConfig(level=logging.INFO, format="%(asctime)s | %(levelname)s | %(name)s | %(message)s")
+logger = logging.getLogger(__name__)
+
+app = FastAPI(
+    title="墨影智学后端 API",
+    description="文本-漫画-动画跨媒介教学智能体 · 后端服务",
+    version="0.1.0",
+)
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
+app.add_exception_handler(AppException, app_exception_handler)
+app.add_exception_handler(Exception, generic_exception_handler)
+
+app.include_router(health.router, tags=["健康检查"])
+app.include_router(rag.router)
+app.include_router(agent.router)
+
+
+@app.on_event("startup")
+async def startup():
+    logger.info("墨影智学后端服务启动中...")
+
+
+@app.on_event("shutdown")
+async def shutdown():
+    logger.info("墨影智学后端服务已关闭")
