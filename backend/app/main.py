@@ -1,3 +1,4 @@
+import asyncio
 import logging
 
 from fastapi import FastAPI
@@ -5,6 +6,7 @@ from fastapi.middleware.cors import CORSMiddleware
 
 from app.api import health, rag, agent
 from app.core.exceptions import AppException, app_exception_handler, generic_exception_handler
+from app.services import rag_service
 
 logging.basicConfig(level=logging.INFO, format="%(asctime)s | %(levelname)s | %(name)s | %(message)s")
 logger = logging.getLogger(__name__)
@@ -34,6 +36,16 @@ app.include_router(agent.router)
 @app.on_event("startup")
 async def startup():
     logger.info("墨影智学后端服务启动中...")
+    asyncio.create_task(_preload_rag())
+
+
+async def _preload_rag():
+    try:
+        logger.info("后台预加载 RAG 集合...")
+        await asyncio.to_thread(rag_service._get_collection)
+        logger.info("RAG 集合预加载完成")
+    except Exception as e:
+        logger.warning(f"RAG 预加载失败（首次检索时将重试）: {e}")
 
 
 @app.on_event("shutdown")
