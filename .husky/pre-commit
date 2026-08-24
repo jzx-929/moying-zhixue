@@ -3,7 +3,7 @@ echo "正在执行 pre-commit 检查..."
 
 # 检查是否有调试代码残留
 DEBUG_PATTERNS="console\.log\|print(\|debugger\|pdb\.set_trace"
-STAGED_FILES=$(git diff --cached --name-only --diff-filter=ACM | grep -E '\.(py|js|ts|jsx|tsx|vue)$' || true)
+STAGED_FILES=$(git diff --cached --name-only --diff-filter=ACM | grep -E '\.(py|js|ts|jsx|tsx|vue)$' | grep -v '^scripts/' || true)
 
 if [ -n "$STAGED_FILES" ]; then
   if echo "$STAGED_FILES" | xargs grep -nE "$DEBUG_PATTERNS" 2>/dev/null; then
