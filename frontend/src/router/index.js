@@ -14,6 +14,24 @@ const routes = [
     meta: { title: '墨漫工坊 · 墨影智学' },
   },
   {
+    path: '/workbench',
+    name: 'Workbench',
+    component: () => import('../views/Workbench.vue'),
+    meta: { title: '教学工作台 · 墨影智学' },
+  },
+  {
+    path: '/studio',
+    name: 'Studio',
+    component: () => import('../views/Studio.vue'),
+    meta: { title: '文影创作坊 · 墨影智学' },
+  },
+  {
+    path: '/lab',
+    name: 'Lab',
+    component: () => import('../views/Lab.vue'),
+    meta: { title: '数字人文实验室 · 墨影智学' },
+  },
+  {
     path: '/about',
     name: 'About',
     component: () => import('../views/About.vue'),
