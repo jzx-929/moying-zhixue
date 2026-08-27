@@ -80,6 +80,16 @@
           <p class="text-ink-muted text-sm">输入小说后点击"开始改编剧本"</p>
         </div>
         <div v-else class="space-y-4">
+          <div v-if="scriptIsMock || scriptSaved" class="flex items-center justify-between gap-2 px-3 py-2 bg-gold/5 border border-gold/20 rounded-lg">
+            <div v-if="scriptIsMock" class="flex items-center gap-2">
+              <span class="text-xs font-bold text-gold">AI</span>
+              <span class="text-xs text-ink-light">以上内容由 AI 生成，仅供参考</span>
+            </div>
+            <div v-if="scriptSaved" class="text-xs text-ink-muted flex items-center gap-1">
+              <span class="text-accent">🔖</span> 已保存到历史记录
+            </div>
+          </div>
+
           <div class="bg-paper2 border border-border rounded-lg p-4">
             <div class="text-xs text-ink-muted mb-1">片名</div>
             <div class="font-heading text-lg text-ink">{{ scriptResult.title }}</div>
@@ -96,7 +106,7 @@
             </div>
           </div>
 
-          <div class="bg-paper2 border border-border rounded-lg p-4">
+          <div v-if="scriptResult.characters" class="bg-paper2 border border-border rounded-lg p-4">
             <div class="text-xs text-ink-muted mb-1">主要角色</div>
             <div class="flex flex-wrap gap-2 mt-2">
               <span
@@ -109,7 +119,7 @@
             </div>
           </div>
 
-          <div class="bg-paper2 border border-border rounded-lg p-4">
+          <div v-if="scriptResult.scenes" class="bg-paper2 border border-border rounded-lg p-4">
             <div class="text-xs text-ink-muted mb-2">场景分镜</div>
             <div class="space-y-3">
               <div
@@ -171,16 +181,6 @@
             </div>
           </div>
         </div>
-
-        <div class="mt-6">
-          <h3 class="font-heading text-lg text-ink mb-4">同屏对比播放</h3>
-          <div class="bg-paper2 border border-border rounded-lg aspect-[21/9] flex items-center justify-center">
-            <div class="text-center text-ink-muted">
-              <div class="text-4xl mb-2">▶</div>
-              <p class="text-sm">双屏同步播放对比</p>
-            </div>
-          </div>
-        </div>
       </div>
     </div>
 
@@ -210,7 +210,7 @@
               v-model="dubText"
               class="input-area h-32 resize-none"
               placeholder="输入需要配音的旁白文字..."
-            >孔子说，学习是一件快乐的事情。有朋友从远方来，更是值得高兴。别人不了解自己，却不生气，这就是君子的风范。</textarea>
+            ></textarea>
           </div>
 
           <div>
@@ -239,6 +239,12 @@
           <p class="text-ink-muted text-sm">点击"生成配音"试听效果</p>
         </div>
         <div v-else class="space-y-6">
+          <div v-if="dubSaved" class="flex items-center justify-end gap-2 px-3 py-2 bg-gold/5 border border-gold/20 rounded-lg">
+            <div class="text-xs text-ink-muted flex items-center gap-1">
+              <span class="text-accent">🔖</span> 已保存到历史记录
+            </div>
+          </div>
+
           <div class="bg-paper2 border border-border rounded-lg aspect-video flex items-center justify-center">
             <div class="text-center">
               <div class="text-5xl mb-3">🔊</div>
@@ -248,8 +254,8 @@
 
           <div class="bg-paper2 border border-border rounded-lg p-4">
             <div class="flex items-center justify-between mb-3">
-              <span class="text-sm font-heading text-ink">蔡志忠旁白风格</span>
-              <span class="text-xs text-ink-muted">{{ dubSpeed }}x 语速</span>
+              <span class="text-sm font-heading text-ink">{{ dubResult.style }}</span>
+              <span class="text-xs text-ink-muted">{{ dubResult.speed }}</span>
             </div>
             <div class="flex items-center gap-3">
               <button class="w-12 h-12 bg-accent text-white rounded-full flex items-center justify-center">
@@ -258,13 +264,13 @@
               <div class="flex-1 h-2 bg-border rounded-full overflow-hidden">
                 <div class="h-full bg-accent w-1/3 rounded-full"></div>
               </div>
-              <span class="text-xs text-ink-muted">0:12 / 0:36</span>
+              <span class="text-xs text-ink-muted">{{ dubResult.duration_estimate }}</span>
             </div>
           </div>
 
           <div class="bg-paper2 border border-border rounded-lg p-4">
             <div class="text-xs text-ink-muted mb-2">配音文案</div>
-            <p class="text-sm text-ink leading-relaxed">{{ dubText }}</p>
+            <p class="text-sm text-ink leading-relaxed">{{ dubResult.text }}</p>
           </div>
         </div>
       </div>
@@ -274,6 +280,8 @@
 
 <script setup>
 import { ref } from 'vue'
+import axios from 'axios'
+import { saveHistory } from '../api/history'
 
 const activeTab = ref('adapt')
 
@@ -290,45 +298,79 @@ const styles = [
   { key: 'silent', icon: '🎞', label: '默片风格' },
 ]
 
-// 小说改编
 const novelTitle = ref('')
 const novelText = ref('')
 const selectedStyle = ref('ink')
 const adapting = ref(false)
 const scriptResult = ref(null)
+const scriptIsMock = ref(false)
+const scriptSaved = ref(false)
 
-function adaptNovel() {
+async function adaptNovel() {
   if (!novelText.value.trim()) return
   adapting.value = true
-  setTimeout(() => {
-    scriptResult.value = {
-      title: novelTitle.value || '改编剧本',
-      genre: selectedStyle.value === 'ink' ? '水墨动画' : '剧情短片',
-      duration: '3-5分钟',
-      characters: ['主角', '配角甲', '配角乙'],
-      scenes: [
-        { location: '室外 · 黄昏', action: '主角独自走在乡间小路上，神色忧郁', dialogue: '这条路，还要走多久呢？' },
-        { location: '室内 · 书房', action: '主角在灯下苦读，时而皱眉时而微笑', dialogue: '原来如此，我明白了！' },
-        { location: '室外 · 清晨', action: '主角迎着朝阳大步前行，背影坚定', dialogue: '出发吧，新的一天！' },
-      ],
+  scriptSaved.value = false
+  try {
+    const res = await axios.post('/api/studio/adapt', {
+      title: novelTitle.value,
+      text: novelText.value,
+      style: selectedStyle.value,
+    })
+    scriptResult.value = res.data.data.script
+    scriptIsMock.value = res.data.data.mock || false
+
+    try {
+      await saveHistory({
+        title: `剧本改编 · ${novelTitle.value || '未命名'}`,
+        input_text: novelText.value,
+        output_data: scriptResult.value,
+        module: 'studio',
+      })
+      scriptSaved.value = true
+    } catch (e) {
+      console.error('历史记录保存失败', e)
     }
+  } catch (e) {
+    console.error('改编失败', e)
+  } finally {
     adapting.value = false
-  }, 2500)
+  }
 }
 
-// 配音
 const dubStyle = ref('caizhizhong')
 const dubText = ref('孔子说，学习是一件快乐的事情。有朋友从远方来，更是值得高兴。别人不了解自己，却不生气，这就是君子的风范。')
 const dubSpeed = ref(1.0)
 const dubbing = ref(false)
 const dubResult = ref(null)
+const dubSaved = ref(false)
 
-function generateDub() {
+async function generateDub() {
   if (!dubText.value.trim()) return
   dubbing.value = true
-  setTimeout(() => {
-    dubResult.value = { generated: true, style: dubStyle.value, speed: dubSpeed.value }
+  dubSaved.value = false
+  try {
+    const res = await axios.post('/api/studio/dub', {
+      text: dubText.value,
+      style: dubStyle.value,
+      speed: parseFloat(dubSpeed.value),
+    })
+    dubResult.value = res.data.data
+
+    try {
+      await saveHistory({
+        title: `配音 · ${dubStyle.value}`,
+        input_text: dubText.value,
+        output_data: dubResult.value,
+        module: 'studio',
+      })
+      dubSaved.value = true
+    } catch (e) {
+      console.error('历史记录保存失败', e)
+    }
+  } catch (e) {
+    console.error('配音生成失败', e)
+  } finally {
     dubbing.value = false
-  }, 2000)
+  }
 }
 </script>

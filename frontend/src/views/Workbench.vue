@@ -74,6 +74,16 @@
       </div>
 
       <div v-if="coursewareResult" class="space-y-6">
+        <div v-if="coursewareIsMock || coursewareSaved" class="flex items-center justify-between gap-2 px-3 py-2 bg-gold/5 border border-gold/20 rounded-lg">
+          <div v-if="coursewareIsMock" class="flex items-center gap-2">
+            <span class="text-xs font-bold text-gold">AI</span>
+            <span class="text-xs text-ink-light">以上内容由 AI 生成，仅供参考，请以原文为准</span>
+          </div>
+          <div v-if="coursewareSaved" class="text-xs text-ink-muted flex items-center gap-1">
+            <span class="text-accent">🔖</span> 已保存到历史记录
+          </div>
+        </div>
+
         <div class="card p-6">
           <h3 class="font-heading text-lg text-ink mb-4">📜 白话译文</h3>
           <div class="bg-paper2 border border-border rounded-lg p-4">
@@ -114,24 +124,12 @@
           </div>
         </div>
 
-        <div class="card p-6">
+        <div v-if="coursewareResult.teaching_plan" class="card p-6">
           <h3 class="font-heading text-lg text-ink mb-4">📝 教学设计建议</h3>
           <ul class="space-y-3 text-sm text-ink-light">
-            <li class="flex gap-3">
-              <span class="text-accent font-bold">1.</span>
-              <span><strong>导入环节（5分钟）：</strong>播放水墨动画，引起学生兴趣，提问"这句话是什么意思？"</span>
-            </li>
-            <li class="flex gap-3">
-              <span class="text-accent font-bold">2.</span>
-              <span><strong>讲解环节（15分钟）：</strong>逐句解读原文，对照白话翻译，讲解重点字词</span>
-            </li>
-            <li class="flex gap-3">
-              <span class="text-accent font-bold">3.</span>
-              <span><strong>互动环节（15分钟）：</strong>使用漫画分镜让学生排序、填空，加深理解</span>
-            </li>
-            <li class="flex gap-3">
-              <span class="text-accent font-bold">4.</span>
-              <span><strong>拓展环节（10分钟）：</strong>讨论"学习的快乐"，联系学生自身经历</span>
+            <li v-for="(step, i) in coursewareResult.teaching_plan" :key="i" class="flex gap-3">
+              <span class="text-accent font-bold">{{ i + 1 }}.</span>
+              <span><strong>{{ step.phase }}（{{ step.duration }}）：</strong>{{ step.action }}</span>
             </li>
           </ul>
         </div>
@@ -178,7 +176,8 @@
             :disabled="generating"
             class="btn-ghost w-full"
           >
-            生成分镜框架
+            <span v-if="generating">生成中...</span>
+            <span v-else>生成分镜框架</span>
           </button>
         </div>
       </div>
@@ -211,29 +210,35 @@
         </div>
 
         <div class="mt-6 flex gap-3">
-          <button @click="getWritingFeedback" class="btn-primary flex-1">获取写作辅导</button>
-          <button @click="generateWritingImage" class="btn-ghost flex-1">生成漫画预览</button>
+          <button @click="getWritingFeedback" :disabled="generating" class="btn-primary flex-1">
+            <span v-if="generating">分析中...</span>
+            <span v-else>获取写作辅导</span>
+          </button>
         </div>
       </div>
 
       <div v-if="writingFeedback" class="card p-6">
-        <h3 class="font-heading text-lg text-ink mb-4">💡 写作辅导建议</h3>
+        <div class="flex items-center justify-between mb-4">
+          <h3 class="font-heading text-lg text-ink">💡 写作辅导建议</h3>
+          <div v-if="writingSaved" class="text-xs text-ink-muted flex items-center gap-1">
+            <span class="text-accent">🔖</span> 已保存到历史记录
+          </div>
+        </div>
         <div class="space-y-4 text-sm text-ink-light">
-          <div class="p-4 bg-olive-soft/30 border border-olive/20 rounded-lg">
+          <div v-if="writingFeedback.strengths?.length" class="p-4 bg-olive-soft/30 border border-olive/20 rounded-lg">
             <p class="font-heading text-olive mb-1">✓ 做得好的地方</p>
             <ul class="space-y-1 ml-4 list-disc">
-              <li>故事结构完整，有起承转合</li>
-              <li>人物对话自然，符合角色性格</li>
-              <li>画面描述具体，可视化程度高</li>
+              <li v-for="s in writingFeedback.strengths" :key="s">{{ s }}</li>
             </ul>
           </div>
-          <div class="p-4 bg-accent/5 border border-accent/20 rounded-lg">
+          <div v-if="writingFeedback.suggestions?.length" class="p-4 bg-accent/5 border border-accent/20 rounded-lg">
             <p class="font-heading text-accent mb-1">🔄 改进建议</p>
             <ul class="space-y-1 ml-4 list-disc">
-              <li>第2格可以增加更多环境描写来烘托氛围</li>
-              <li>人物动作描述可以更丰富，增强画面感</li>
-              <li>结尾可以加一句点睛之笔，深化主题</li>
+              <li v-for="s in writingFeedback.suggestions" :key="s">{{ s }}</li>
             </ul>
+          </div>
+          <div v-if="writingFeedback.fill_rate !== undefined" class="text-xs text-ink-muted">
+            完成率：{{ (writingFeedback.fill_rate * 100).toFixed(0) }}%
           </div>
         </div>
       </div>
@@ -243,6 +248,8 @@
 
 <script setup>
 import { ref } from 'vue'
+import axios from 'axios'
+import { saveHistory } from '../api/history'
 
 const activeTab = ref('courseware')
 
@@ -251,56 +258,91 @@ const tabs = [
   { key: 'writing', icon: '✍️', label: '写作训练', desc: '漫画分镜搭建故事框架，双维度写作辅导' },
 ]
 
-// 课件生成
 const coursewareInput = ref('子曰：学而时习之，不亦说乎？有朋自远方来，不亦乐乎？')
 const coursewareSource = ref('论语·学而')
 const coursewareGrade = ref('高中')
 const generating = ref(false)
 const coursewareResult = ref(null)
+const coursewareIsMock = ref(false)
+const coursewareSaved = ref(false)
 
-function generateCourseware() {
+async function generateCourseware() {
   if (!coursewareInput.value.trim()) return
   generating.value = true
-  setTimeout(() => {
-    coursewareResult.value = {
-      translation: '孔子说："学了知识然后按时温习，不也是很愉快吗？有志同道合的朋友从远方来，不也是很快乐吗？别人不了解我，我却不怨恨，不也是有才德的人吗？"',
-      panels: [
-        { visual: '孔子端坐案前，手持竹简阅读', text: '学而时习之，不亦说乎' },
-        { visual: '弟子从远方而来，二人拱手相迎', text: '有朋自远方来，不亦乐乎' },
-        { visual: '孔子独立窗前，神色从容', text: '人不知而不愠，不亦君子乎' },
-      ],
+  coursewareSaved.value = false
+  try {
+    const res = await axios.post('/api/workbench/courseware', {
+      text: coursewareInput.value,
+      source: coursewareSource.value,
+      grade: coursewareGrade.value,
+    })
+    coursewareResult.value = res.data.data.courseware
+    coursewareIsMock.value = res.data.data.mock || false
+
+    try {
+      await saveHistory({
+        title: `${coursewareSource.value} · ${coursewareGrade.value}课件`,
+        input_text: coursewareInput.value,
+        output_data: coursewareResult.value,
+        module: 'workbench',
+      })
+      coursewareSaved.value = true
+    } catch (e) {
+      console.error('历史记录保存失败', e)
     }
+  } catch (e) {
+    console.error('课件生成失败', e)
+  } finally {
     generating.value = false
-  }, 2000)
+  }
 }
 
-// 写作训练
 const writingTheme = ref('学习')
 const panelCount = ref(4)
 const writingPanels = ref([])
 const writingFeedback = ref(null)
+const writingSaved = ref(false)
 
-function generateWritingFrame() {
-  const themes = {
-    '学习': ['少年灯下苦读', '遇到难题困惑', '老师指点迷津', '豁然开朗喜悦', '学有所成分享'],
-    '友谊': ['两人初次相遇', '一起学习嬉戏', '发生争执矛盾', '和好如初情深', '友谊天长地久'],
-    '坚持': ['立下远大志向', '遭遇挫折失败', '内心挣扎动摇', '咬牙坚持前行', '终获成功喜悦'],
-    '诚信': ['面临利益诱惑', '内心天人交战', '选择坚守诚信', '获得他人敬重', '美名传扬四方'],
+async function generateWritingFrame() {
+  generating.value = true
+  try {
+    const res = await axios.post('/api/workbench/writing/frame', {
+      theme: writingTheme.value,
+      panel_count: panelCount.value,
+    })
+    writingPanels.value = res.data.data.panels || []
+    writingFeedback.value = null
+  } catch (e) {
+    console.error('分镜框架生成失败', e)
+  } finally {
+    generating.value = false
   }
-  const frames = themes[writingTheme.value] || themes['学习']
-  writingPanels.value = frames.slice(0, panelCount.value).map((v, i) => ({
-    visual: v,
-    text: '',
-  }))
-  writingFeedback.value = null
 }
 
-function getWritingFeedback() {
-  writingFeedback.value = { generated: true }
-}
+async function getWritingFeedback() {
+  generating.value = true
+  writingSaved.value = false
+  try {
+    const res = await axios.post('/api/workbench/writing/feedback', {
+      panels: writingPanels.value,
+    })
+    writingFeedback.value = res.data.data
 
-function generateWritingImage() {
-  // Mock: 预留生成漫画预览功能
-  alert('漫画预览功能开发中，敬请期待！')
+    try {
+      await saveHistory({
+        title: `写作训练 · ${writingTheme.value}`,
+        input_text: JSON.stringify(writingPanels.value),
+        output_data: writingFeedback.value,
+        module: 'workbench',
+      })
+      writingSaved.value = true
+    } catch (e) {
+      console.error('历史记录保存失败', e)
+    }
+  } catch (e) {
+    console.error('写作辅导获取失败', e)
+  } finally {
+    generating.value = false
+  }
 }
 </script>

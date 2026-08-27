@@ -1,7 +1,23 @@
 <template>
   <div class="space-y-4">
     <div>
-      <label class="block text-sm font-heading text-ink mb-2">输入古文</label>
+      <div class="flex items-center justify-between mb-2">
+        <label class="block text-sm font-heading text-ink">输入古文</label>
+        <button
+          @click="triggerUpload"
+          :disabled="ocrLoading"
+          class="text-xs text-accent hover:underline"
+        >
+          {{ ocrLoading ? '识别中...' : '图片识别文字' }}
+        </button>
+        <input
+          ref="fileInput"
+          type="file"
+          accept="image/*"
+          class="hidden"
+          @change="handleUpload"
+        />
+      </div>
       <textarea
         v-model="store.inputText"
         class="input-area h-32 resize-none"
@@ -41,6 +57,10 @@
       </button>
     </div>
 
+    <div v-if="ocrError" class="text-shu text-sm bg-shu/5 border border-shu/20 rounded-lg p-3">
+      {{ ocrError }}
+    </div>
+
     <div v-if="store.error" class="text-shu text-sm bg-shu/5 border border-shu/20 rounded-lg p-3">
       {{ store.error }}
     </div>
@@ -48,6 +68,36 @@
 </template>
 
 <script setup>
+import { ref } from 'vue'
 import { useWorkshopStore } from '../stores/workshop'
+import { recognizeImage } from '../api/ocr'
+
 const store = useWorkshopStore()
+const fileInput = ref(null)
+const ocrLoading = ref(false)
+const ocrError = ref(null)
+
+function triggerUpload() {
+  fileInput.value?.click()
+}
+
+async function handleUpload(e) {
+  const file = e.target.files?.[0]
+  if (!file) return
+  ocrLoading.value = true
+  ocrError.value = null
+  try {
+    const data = await recognizeImage(file, false)
+    if (data.text) {
+      store.inputText = data.text
+    } else if (data.error) {
+      ocrError.value = data.error
+    }
+  } catch (err) {
+    ocrError.value = '图片识别失败：' + (err.message || '未知错误')
+  } finally {
+    ocrLoading.value = false
+    e.target.value = ''
+  }
+}
 </script>

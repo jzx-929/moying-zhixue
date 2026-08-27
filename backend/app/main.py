@@ -4,8 +4,9 @@ import logging
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
-from app.api import health, rag, agent, workbench, studio, lab
+from app.api import health, rag, agent, workbench, studio, lab, history, export, ocr
 from app.core.exceptions import AppException, app_exception_handler, generic_exception_handler
+from app.core.middleware import LoggingMiddleware, RateLimitMiddleware
 from app.services import rag_service
 
 logging.basicConfig(level=logging.INFO, format="%(asctime)s | %(levelname)s | %(name)s | %(message)s")
@@ -24,6 +25,8 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+app.add_middleware(LoggingMiddleware)
+app.add_middleware(RateLimitMiddleware)
 
 app.add_exception_handler(AppException, app_exception_handler)
 app.add_exception_handler(Exception, generic_exception_handler)
@@ -34,6 +37,9 @@ app.include_router(agent.router)
 app.include_router(workbench.router)
 app.include_router(studio.router)
 app.include_router(lab.router)
+app.include_router(history.router)
+app.include_router(export.router)
+app.include_router(ocr.router)
 
 
 @app.on_event("startup")

@@ -1,9 +1,14 @@
 <template>
   <div class="space-y-6">
     <!-- AI 生成内容标识 -->
-    <div v-if="store.textOutput || store.visualOutput" class="flex items-center gap-2 px-3 py-2 bg-gold/5 border border-gold/20 rounded-lg">
-      <span class="text-xs font-bold text-gold">AI</span>
-      <span class="text-xs text-ink-light">以上内容由 AI 生成，仅供参考，请以原文为准</span>
+    <div v-if="store.textOutput || store.visualOutput" class="flex items-center justify-between gap-2 px-3 py-2 bg-gold/5 border border-gold/20 rounded-lg">
+      <div class="flex items-center gap-2">
+        <span class="text-xs font-bold text-gold">AI</span>
+        <span class="text-xs text-ink-light">以上内容由 AI 生成，仅供参考，请以原文为准</span>
+      </div>
+      <div v-if="store.lastHistoryId" class="text-xs text-ink-muted flex items-center gap-1">
+        <span class="text-accent">🔖</span> 已保存
+      </div>
     </div>
 
     <!-- 对话历史 -->
@@ -129,6 +134,17 @@
           </div>
         </div>
       </div>
+    </div>
+
+    <!-- 导出按钮 -->
+    <div v-if="store.textOutput" class="flex items-center gap-3 pt-2 border-t border-border">
+      <span class="text-xs text-ink-muted">导出作品：</span>
+      <button @click="store.exportResult('json')" class="btn-ghost text-xs">
+        JSON 格式
+      </button>
+      <button @click="store.exportResult('text')" class="btn-ghost text-xs">
+        文本格式
+      </button>
     </div>
 
     <div v-if="!store.ragResults.length && !store.textOutput && !store.visualOutput && !store.loading" class="text-center py-12">

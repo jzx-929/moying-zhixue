@@ -2,6 +2,8 @@ import { defineStore } from 'pinia'
 import { ref } from 'vue'
 import { searchRag } from '../api/rag'
 import { generate } from '../api/agent'
+import { saveHistory } from '../api/history'
+import { downloadExport } from '../api/export'
 
 export const useWorkshopStore = defineStore('workshop', () => {
   const inputText = ref('')
@@ -14,6 +16,7 @@ export const useWorkshopStore = defineStore('workshop', () => {
 
   const chatHistory = ref([])
   const followUpText = ref('')
+  const lastHistoryId = ref(null)
 
   async function search() {
     if (!inputText.value.trim()) return
@@ -41,9 +44,21 @@ export const useWorkshopStore = defineStore('workshop', () => {
       visualOutput.value = data.visual_output || null
 
       const summary = data.text_output
-        ? `出处：${data.text_output.source}\n翻译：${data.textOutput?.translation?.slice(0, 60)}…\n分镜：${data.text_output.storyboard?.length || 0} 格`
+        ? `出处：${data.text_output.source}\n翻译：${data.text_output?.translation?.slice(0, 60)}…\n分镜：${data.text_output.storyboard?.length || 0} 格`
         : '生成完成'
       chatHistory.value.push({ role: 'assistant', content: summary })
+
+      try {
+        const histData = await saveHistory({
+          title: inputText.value.slice(0, 20),
+          input_text: inputText.value,
+          output_data: data,
+          module: 'workshop',
+        })
+        lastHistoryId.value = histData.id
+      } catch (e) {
+        console.error('历史记录保存失败', e)
+      }
     } catch (e) {
       error.value = e.message
     } finally {
@@ -79,6 +94,20 @@ export const useWorkshopStore = defineStore('workshop', () => {
     }
   }
 
+  async function exportResult(format = 'json') {
+    if (!textOutput.value) return
+    const data = {
+      title: inputText.value.slice(0, 20) || '墨影智学作品',
+      source: textOutput.value.source || '',
+      translation: textOutput.value.translation || '',
+      storyboard: textOutput.value.storyboard || [],
+      visual_frames: visualOutput.value?.frames || [],
+      format,
+    }
+    const filename = `moying_export.${format}`
+    await downloadExport(data, filename)
+  }
+
   function reset() {
     inputText.value = ''
     ragResults.value = []
@@ -86,6 +115,7 @@ export const useWorkshopStore = defineStore('workshop', () => {
     visualOutput.value = null
     chatHistory.value = []
     followUpText.value = ''
+    lastHistoryId.value = null
     error.value = null
   }
 
@@ -99,9 +129,11 @@ export const useWorkshopStore = defineStore('workshop', () => {
     error,
     chatHistory,
     followUpText,
+    lastHistoryId,
     search,
     runGenerate,
     followUp,
+    exportResult,
     reset,
   }
 })
