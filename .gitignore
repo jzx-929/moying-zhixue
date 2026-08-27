@@ -83,6 +83,10 @@ temp/
 .cache/
 .trae-html-share-packages/
 
+# ===== 向量库构建产物 =====
+data/chroma_db/
+*.pickle
+
 # ===== 数据库 =====
 *.db
 *.sqlite3
