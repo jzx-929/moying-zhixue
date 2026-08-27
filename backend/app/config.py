@@ -11,10 +11,12 @@ class Settings(BaseSettings):
     embedding_model: str = "BAAI/bge-small-zh-v1.5"
     collection_name: str = "guoxue_texts"
 
-    spark_api_base: str = "https://spark-api.example.com/v1"
+    spark_api_base: str = "https://xingchen-api.xf-yun.com/workflow/v1/chat/completions"
+    spark_appid: str = ""
+    spark_api_key: str = ""
+    spark_api_secret: str = ""
     wengai_agent_id: str = ""
     moying_agent_id: str = ""
-    spark_api_key: str = ""
 
     model_config = {"env_file": ".env", "env_file_encoding": "utf-8"}
 

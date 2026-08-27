@@ -1,5 +1,6 @@
 import json
 import logging
+import re
 
 import httpx
 from fastapi import APIRouter
@@ -13,20 +14,49 @@ logger = logging.getLogger(__name__)
 
 router = APIRouter(prefix="/api/agent", tags=["Agent 调用"])
 
+SPARK_API_URL = "https://xingchen-api.xf-yun.com/workflow/v1/chat/completions"
 
-async def call_agent(agent_id: str, user_input: str) -> dict:
-    if not agent_id or not settings.spark_api_key:
-        raise AppException(code=503, message="Agent 尚未配置，请等待 AI 模型组完成 Agent 创建后填充 .env")
 
+def _agents_ready() -> bool:
+    return bool(
+        settings.spark_api_key
+        and settings.spark_api_secret
+        and settings.wengai_agent_id
+        and settings.moying_agent_id
+    )
+
+
+async def call_agent(flow_id: str, user_input: str) -> dict:
+    headers = {
+        "Authorization": f"Bearer {settings.spark_api_key}:{settings.spark_api_secret}",
+        "Content-Type": "application/json",
+    }
+    payload = {
+        "flow_id": flow_id,
+        "uid": "moying-zhixue",
+        "stream": False,
+        "parameters": {"AGENT_USER_INPUT": user_input},
+        "ext": {"bot_id": "workflow", "caller": "workflow"},
+    }
     async with httpx.AsyncClient(timeout=60) as client:
-        resp = await client.post(
-            settings.spark_api_base,
-            headers={"Authorization": f"Bearer {settings.spark_api_key}"},
-            json={"agent_id": agent_id, "input": user_input},
-        )
-        if resp.status_code != 200:
-            raise AppException(code=502, message=f"Agent 调用失败: HTTP {resp.status_code}")
-        return resp.json()
+        resp = await client.post(SPARK_API_URL, headers=headers, json=payload)
+    if resp.status_code != 200:
+        raise AppException(code=502, message=f"Agent 调用失败: HTTP {resp.status_code} {resp.text[:200]}")
+    data = resp.json()
+    content = data["choices"][0]["delta"]["content"]
+    return _extract_json(content)
+
+
+def _extract_json(text: str) -> dict:
+    text = text.strip()
+    if text.startswith("```"):
+        m = re.search(r"```(?:json)?\s*([\s\S]*?)```", text)
+        if m:
+            text = m.group(1).strip()
+    m = re.search(r"\{[\s\S]*\}", text)
+    if m:
+        text = m.group(0)
+    return json.loads(text)
 
 
 def _mock_text_output(text: str) -> dict:
@@ -61,7 +91,7 @@ def _mock_visual_output(storyboard: list) -> dict:
 @router.post("/generate")
 async def generate(req: GenerateRequest):
     result = {}
-    agents_ready = bool(settings.wengai_agent_id and settings.moying_agent_id and settings.spark_api_key)
+    agents_ready = _agents_ready()
 
     if req.mode in ("full", "text"):
         if agents_ready:

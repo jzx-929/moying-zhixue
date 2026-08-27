@@ -4,7 +4,7 @@ import logging
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
-from app.api import health, rag, agent
+from app.api import health, rag, agent, workbench, studio, lab
 from app.core.exceptions import AppException, app_exception_handler, generic_exception_handler
 from app.services import rag_service
 
@@ -31,6 +31,9 @@ app.add_exception_handler(Exception, generic_exception_handler)
 app.include_router(health.router, tags=["健康检查"])
 app.include_router(rag.router)
 app.include_router(agent.router)
+app.include_router(workbench.router)
+app.include_router(studio.router)
+app.include_router(lab.router)
 
 
 @app.on_event("startup")

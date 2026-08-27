@@ -93,31 +93,17 @@
             <h3 class="font-heading text-base text-ink mb-3">墨色浓淡分布</h3>
             <div class="bg-paper2 border border-border rounded-lg p-4">
               <div class="space-y-4">
-                <div>
+                <div v-for="ink in inkDensity" :key="ink.label">
                   <div class="flex justify-between text-sm mb-1">
-                    <span class="text-ink">浓墨</span>
-                    <span class="text-ink-muted">15%</span>
+                    <span class="text-ink">{{ ink.label }}</span>
+                    <span class="text-ink-muted">{{ ink.percent }}%</span>
                   </div>
                   <div class="h-4 bg-border rounded-full overflow-hidden">
-                    <div class="h-full bg-ink rounded-full" style="width: 15%"></div>
-                  </div>
-                </div>
-                <div>
-                  <div class="flex justify-between text-sm mb-1">
-                    <span class="text-ink">中墨</span>
-                    <span class="text-ink-muted">35%</span>
-                  </div>
-                  <div class="h-4 bg-border rounded-full overflow-hidden">
-                    <div class="h-full bg-ink-light rounded-full" style="width: 35%"></div>
-                  </div>
-                </div>
-                <div>
-                  <div class="flex justify-between text-sm mb-1">
-                    <span class="text-ink">淡墨</span>
-                    <span class="text-ink-muted">50%</span>
-                  </div>
-                  <div class="h-4 bg-border rounded-full overflow-hidden">
-                    <div class="h-full bg-ink-muted rounded-full" style="width: 50%"></div>
+                    <div
+                      class="h-full rounded-full"
+                      :class="ink.label === '浓墨' ? 'bg-ink' : ink.label === '中墨' ? 'bg-ink-light' : 'bg-ink-muted'"
+                      :style="{ width: `${ink.percent}%` }"
+                    ></div>
                   </div>
                 </div>
               </div>
@@ -352,7 +338,8 @@
 </template>
 
 <script setup>
-import { ref } from 'vue'
+import { ref, onMounted } from 'vue'
+import axios from 'axios'
 
 const activeTab = ref('composition')
 
@@ -362,47 +349,48 @@ const tabs = [
   { key: 'dataset', icon: '📦', label: '数据集', desc: '双RAG知识库概览与研究工具链' },
 ]
 
-const stats = [
-  { value: '1,729', label: '文本段落' },
-  { value: '500+', label: '漫画图像' },
-  { value: '5', label: '涵盖典籍' },
-  { value: '8', label: '分析维度' },
-]
+const stats = ref([
+  { value: '...', label: '文本段落' },
+  { value: '...', label: '漫画图像' },
+  { value: '...', label: '涵盖典籍' },
+  { value: '...', label: '分析维度' },
+])
 
-// 构图分析数据
-const gridCells = [
-  { count: 5 }, { count: 8 }, { count: 12 },
-  { count: 10 }, { count: 25 }, { count: 35 },
-  { count: 3 }, { count: 15 }, { count: 45 },
-]
+const gridCells = ref([])
+const whitespaceRanges = ref([])
+const lineCountBars = ref([])
+const inkDensity = ref([
+  { label: '浓墨', percent: 15 },
+  { label: '中墨', percent: 35 },
+  { label: '淡墨', percent: 50 },
+])
+const topWords = ref([])
+const datasets = ref(null)
 
-const whitespaceRanges = [
-  { label: '30% 以下', count: 12, percent: 6 },
-  { label: '30-40%', count: 28, percent: 14 },
-  { label: '40-50%', count: 65, percent: 32.5 },
-  { label: '50-60%', count: 58, percent: 29 },
-  { label: '60% 以上', count: 37, percent: 18.5 },
-]
-
-const lineCountBars = [
-  { label: '≤3条', height: 20 },
-  { label: '4-5条', height: 60 },
-  { label: '6-7条', height: 85 },
-  { label: '8-9条', height: 45 },
-  { label: '≥10条', height: 15 },
-]
-
-// 文本分析数据
-const topWords = [
-  { word: '君子', count: 156, percent: 100 },
-  { word: '道', count: 142, percent: 91 },
-  { word: '仁', count: 128, percent: 82 },
-  { word: '学', count: 98, percent: 63 },
-  { word: '义', count: 87, percent: 56 },
-  { word: '天', count: 76, percent: 49 },
-  { word: '人', count: 72, percent: 46 },
-  { word: '德', count: 65, percent: 42 },
-  { word: '知', count: 58, percent: 37 },
-  { word: '礼', count: 52, percent: 33 },
-]
+onMounted(async () => {
+  try {
+    const [statsRes, compRes, textRes, dsRes] = await Promise.all([
+      axios.get('/api/lab/stats'),
+      axios.get('/api/lab/composition'),
+      axios.get('/api/lab/text-analysis'),
+      axios.get('/api/lab/datasets'),
+    ])
+    const s = statsRes.data.data
+    stats.value = [
+      { value: s.text_chunks.toLocaleString(), label: '文本段落' },
+      { value: s.images, label: '漫画图像' },
+      { value: String(s.classics), label: '涵盖典籍' },
+      { value: String(s.dimensions), label: '分析维度' },
+    ]
+    const c = compRes.data.data
+    gridCells.value = c.grid_cells.map(v => ({ count: v }))
+    whitespaceRanges.value = c.whitespace_ranges
+    lineCountBars.value = c.line_count_bars
+    inkDensity.value = c.ink_density
+    topWords.value = textRes.data.data.top_words
+    datasets.value = dsRes.data.data
+  } catch (e) {
+    console.error('Lab 数据加载失败', e)
+  }
+})
 </script>
